@@ -25,6 +25,12 @@ aead = { version = "0.5.2", features=["arrayvec"] }
 #https://github.com/RustCrypto/AEADs/
 chacha20poly1305 = "0.10.1"
 
+#https://github.com/dalek-cryptography/ed25519-dalek/
+ed25519-dalek = {version="2.0.0", features=["rand_core"]}
+
+#https://github.com/dalek-cryptography/x25519-dalek/
+x25519-dalek = {version="2.0.0", features=["static_secrets"]}
+
 [features]
 alloc = ["aead/alloc"]
 
