@@ -47,41 +47,41 @@ pub fn hex_decode<'a, const T: usize>(hex: impl AsRef<[u8]>, buffer: &'a mut [u8
     *buffer
 }
 
-// #[cfg(feature = "alloc")]
-// pub fn hex_encode_string(bytes: &[u8]) -> String {
-//     let mut buffer = Vec::with_capacity(bytes.len() * 2);
+#[cfg(feature = "alloc")]
+pub fn hex_encode_string(bytes: &[u8]) -> String {
+    let mut buffer = Vec::with_capacity(bytes.len() * 2);
 
-//     for byte in bytes {
-//         let s_index = (byte >> 4) as usize;
-//         buffer.push(HEX_TABLE[s_index]);
+    for byte in bytes {
+        let s_index = (byte >> 4) as usize;
+        buffer.push(HEX_TABLE[s_index]);
 
-//         let b_index = (byte & 0xF) as usize;
-//         buffer.push(HEX_TABLE[b_index]);
-//     }
+        let b_index = (byte & 0xF) as usize;
+        buffer.push(HEX_TABLE[b_index]);
+    }
 
-//     unsafe { String::from_utf8_unchecked(buffer) }
-// }
+    unsafe { String::from_utf8_unchecked(buffer) }
+}
 
-// #[cfg(feature = "alloc")]
-// pub fn hex_decode_vec(hex: impl Into<String>) -> Vec<u8> {
-//     let string = hex.into();
+#[cfg(feature = "alloc")]
+pub fn hex_decode_vec(hex: impl Into<String>) -> Vec<u8> {
+    let string = hex.into();
 
-//     let bytes = string.as_bytes();
+    let bytes = string.as_bytes();
 
-//     let len = bytes.len() / 2;
+    let len = bytes.len() / 2;
 
-//     let mut buffer = Vec::with_capacity(len);
+    let mut buffer = Vec::with_capacity(len);
 
-//     for i in 0..len {
-//         let index = i * 2;
-//         let s = (bytes[index] << 4) as u32;
+    for i in 0..len {
+        let index = i * 2;
+        let s = (bytes[index] << 4) as u32;
 
-//         let b = (bytes[index + 1] as char).to_digit(16).unwrap();
+        let b = (bytes[index + 1] as char).to_digit(16).unwrap();
 
-//         let byte = (s + b) as u8;
+        let byte = (s + b) as u8;
 
-//         buffer.push(byte);
-//     }
+        buffer.push(byte);
+    }
 
-//     buffer
-// }
+    buffer
+}
