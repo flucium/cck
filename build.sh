@@ -17,12 +17,15 @@ if [ $1 = "release" ]; then
     fi
 
 
-    dir=cck-`git rev-parse --abbrev-ref @`-$os-$arch
+    version=`cat < Cargo.toml | grep -Po '(?<=^version = ")[^"]*(?=".*)'`
+
+    # dir=cck-`git rev-parse --abbrev-ref @`-$os-$arch
+    dir=cck-$version-$os-$arch
 
     cargo build --features=alloc --release && \
     mkdir $dir && cp -r ./target/release/* $dir/ && cp ./LICENSE $dir/LICENSE && cp ./README.md $dir/README.md && cp ./image.png $dir/image.png && \
     tar -zcvf $dir.tar.gz ./$dir && \
     rm -r ./$dir
 else
-    cargo build --features=alloc
+    cargo build
 fi
