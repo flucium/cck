@@ -13,6 +13,10 @@ pub const PEM_LABEL_PRIVATE_KEY: &Label = "PRIVATE KEY";
 
 pub const PEM_LABEL_PUBLIC_KEY: &Label = "PUBLIC KEY";
 
+pub const PEM_LABEL_CCK_PRIVATE_KEY: &Label = "CCK PRIVATE KEY";
+
+pub const PEM_LABEL_CCK_PUBLIC_KEY: &Label = "CCK PUBLIC KEY";
+
 
 pub fn pem_encode<'a, const T: usize>(
     label: &Label,
