@@ -2,6 +2,8 @@ pub use digest::Digest;
 
 use crate::size::{SIZE_32, SIZE_64};
 
+pub const BLAKE3_DEFAULT_CONTEXT:&str = "";
+
 pub fn blake3_digest(bytes: &[u8], salt: &[u8]) -> [u8; SIZE_32] {
     blake3::Hasher::new()
         .update(bytes)
