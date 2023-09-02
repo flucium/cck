@@ -27,5 +27,5 @@ if [ $1 = "release" ]; then
     tar -zcvf $dir.tar.gz ./$dir && \
     rm -r ./$dir
 else
-    cargo build
+    cargo build --features=alloc
 fi
