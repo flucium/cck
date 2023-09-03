@@ -23,7 +23,7 @@ fn deflate_decompress(b: &mut Bencher) {
     let bytes: [u8; 7] = [203, 72, 205, 201, 201, 7, 0];
     let mut buffer: [u8; 10] = [0u8; 10];
     b.iter(|| {
-        cck::compress::deflate::decompress(cck::compress::Level::default(), bytes, &mut buffer)
+        cck::compress::deflate::decompress( bytes, &mut buffer)
             .unwrap();
     });
 }
@@ -44,6 +44,6 @@ fn deflate_decompress_vec(b: &mut Bencher) {
     let bytes: [u8; 7] = [203, 72, 205, 201, 201, 7, 0];
 
     b.iter(|| {
-        cck::compress::deflate::decompress_vec(cck::compress::Level::default(), bytes).unwrap();
+        cck::compress::deflate::decompress_vec( bytes).unwrap();
     });
 }
