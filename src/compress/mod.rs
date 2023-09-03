@@ -9,16 +9,33 @@ pub enum Level {
     Best = 9,
 }
 
-impl Level {
-    pub(super) fn to_u32(&self) -> u32 {
+impl From<u32> for Level {
+    fn from(level: u32) -> Self {
+        Self::Any(level)
+    }
+}
+
+impl Into<u32> for Level {
+    fn into(self) -> u32 {
         match self {
-            Self::Any(n) => *n,
-            Self::Fast => 1,
-            Self::Normal => 6,
-            Self::Best => 9,
+            Level::Any(n) => n as u32,
+            Level::Fast => 1 as u32,
+            Level::Normal => 6 as u32,
+            Level::Best => 9 as u32,
         }
     }
 }
+
+// impl Level {
+//     pub(super) fn to_u32(&self) -> u32 {
+//         match self {
+//             Self::Any(n) => *n,
+//             Self::Fast => 1,
+//             Self::Normal => 6,
+//             Self::Best => 9,
+//         }
+//     }
+// }
 
 impl core::default::Default for Level {
     fn default() -> Self {

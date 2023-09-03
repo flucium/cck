@@ -6,7 +6,7 @@ pub fn compress<'a, const T: usize>(
     bytes: impl AsRef<[u8]>,
     buffer: &'a mut [u8; T],
 ) -> crate::Result<&'a [u8]> {
-    let mut compress = Compress::new(Compression::new(level.to_u32()), false);
+    let mut compress = Compress::new(Compression::new(level.into()), false);
 
     compress
         .compress(bytes.as_ref(), buffer, FlushCompress::Finish)
