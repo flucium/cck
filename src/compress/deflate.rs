@@ -24,7 +24,6 @@ pub fn compress<'a, const T: usize>(
 }
 
 pub fn decompress<'a, const T: usize>(
-    level: Level,
     bytes: impl AsRef<[u8]>,
     buffer: &'a mut [u8; T],
 ) -> crate::Result<&'a [u8]> {
@@ -55,7 +54,7 @@ pub fn compress_vec(level: Level, bytes: impl AsRef<[u8]>) -> crate::Result<Vec<
 }
 
 #[cfg(feature = "alloc")]
-pub fn decompress_vec(level: Level, bytes: impl AsRef<[u8]>) -> crate::Result<Vec<u8>> {
+pub fn decompress_vec(bytes: impl AsRef<[u8]>) -> crate::Result<Vec<u8>> {
     let bytes = bytes.as_ref();
 
     let mut buffer = Vec::with_capacity(bytes.len() * 2);
