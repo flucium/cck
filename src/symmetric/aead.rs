@@ -29,6 +29,7 @@ pub(super) fn aead_decrypt_in_place(
         .map_err(|_| Error)
 }
 
+#[cfg(feature = "alloc")]
 pub(super) fn aead_encrypt(
     aead: impl AeadInPlace,
     nonce: &[u8],
@@ -45,6 +46,7 @@ pub(super) fn aead_encrypt(
     .map_err(|_| Error)
 }
 
+#[cfg(feature = "alloc")]
 pub(super) fn aead_decrypt(
     aead: impl AeadInPlace,
     nonce: &[u8],
