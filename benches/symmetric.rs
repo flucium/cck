@@ -25,7 +25,7 @@ fn chacha20_poly1305_encrypt(b: &mut Bencher) {
             .extend_from_slice(&[104, 101, 108, 108, 111])
             .unwrap();
 
-        cck::symmetric::chacha20_poly1305_encrypt(&KEY, &NONCE, &[], &mut message).unwrap()
+        cck::symmetric::chacha20_poly1305_encrypt_in_place(&KEY, &NONCE, &[], &mut message).unwrap()
     })
 }
 
@@ -41,7 +41,6 @@ fn chacha20_poly1305_decrypt(b: &mut Bencher) {
     b.iter(move || {
         let mut message: cck::symmetric::ArrayVec<u8, 256> = cck::symmetric::ArrayVec::new();
 
-        // hello: [104, 101, 108, 108, 111]
         message
             .extend_from_slice(&[
                 30, 117, 55, 72, 38, 100, 128, 57, 130, 159, 56, 119, 83, 106, 118, 249, 117, 18,
@@ -49,6 +48,6 @@ fn chacha20_poly1305_decrypt(b: &mut Bencher) {
             ])
             .unwrap();
 
-        cck::symmetric::chacha20_poly1305_decrypt(&KEY, &NONCE, &[], &mut message).unwrap()
+        cck::symmetric::chacha20_poly1305_decrypt_in_place(&KEY, &NONCE, &[], &mut message).unwrap()
     })
 }

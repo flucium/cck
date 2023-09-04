@@ -11,7 +11,11 @@ path = "./src/lib.rs"
 
 [[bin]]
 name = "cck"
-path = "./src/bin/main.rs"
+path = "./src/bin/cli/main.rs"
+
+[[bin]]
+name = "cckd"
+path = "./src/bin/broker/main.rs"
 
 [dependencies]
 
@@ -45,6 +49,7 @@ x25519-dalek = {version="2.0.0", features=["static_secrets"]}
 #https://github.com/rust-lang/flate2-rs
 flate2 = "1.0.27"
 
+
 [features]
-alloc = ["base64ct/alloc"] # "aead/alloc" "pem-rfc7468/alloc"
+alloc = ["base64ct/alloc", "aead/alloc", "chacha20poly1305/alloc"] #  "pem-rfc7468/alloc"
 #std = []
