@@ -1,6 +1,6 @@
 // e.g.
 // cargo bench --package cck --bench symmetric -- --exact --nocapture
-// cargo bench --package cck --bench symmetric -- chacha20_poly1305_encrypt --exact --nocapture
+// cargo bench --package cck --bench symmetric -- chacha20_poly1305_encrypt_in_place --exact --nocapture
 
 #![feature(test)]
 extern crate test;
@@ -9,7 +9,7 @@ use test::Bencher;
 use cck::symmetric::*;
 
 #[bench]
-fn chacha20_poly1305_encrypt(b: &mut Bencher) {
+fn chacha20_poly1305_encrypt_in_place(b: &mut Bencher) {
     const KEY: [u8; 32] = [
         57, 175, 86, 245, 102, 95, 243, 137, 254, 235, 187, 7, 87, 88, 175, 190, 102, 82, 188, 163,
         54, 51, 85, 130, 172, 177, 0, 252, 130, 32, 174, 81,
@@ -30,7 +30,7 @@ fn chacha20_poly1305_encrypt(b: &mut Bencher) {
 }
 
 #[bench]
-fn chacha20_poly1305_decrypt(b: &mut Bencher) {
+fn chacha20_poly1305_decrypt_in_place(b: &mut Bencher) {
     const KEY: [u8; 32] = [
         57, 175, 86, 245, 102, 95, 243, 137, 254, 235, 187, 7, 87, 88, 175, 190, 102, 82, 188, 163,
         54, 51, 85, 130, 172, 177, 0, 252, 130, 32, 174, 81,
