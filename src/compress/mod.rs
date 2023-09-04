@@ -26,17 +26,6 @@ impl Into<u32> for Level {
     }
 }
 
-// impl Level {
-//     pub(super) fn to_u32(&self) -> u32 {
-//         match self {
-//             Self::Any(n) => *n,
-//             Self::Fast => 1,
-//             Self::Normal => 6,
-//             Self::Best => 9,
-//         }
-//     }
-// }
-
 impl core::default::Default for Level {
     fn default() -> Self {
         Self::Normal
