@@ -4,8 +4,11 @@ extern crate alloc;
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 
+#[cfg(feature = "alloc")]
+use aead::{Aead, Payload};
+
 use crate::{Error, Result};
-use aead::{Aead, AeadInPlace, Payload};
+use aead::AeadInPlace;
 
 pub use aead::{arrayvec::ArrayVec, Buffer, KeyInit};
 
