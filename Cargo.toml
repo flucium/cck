@@ -12,10 +12,12 @@ path = "./src/lib.rs"
 [[bin]]
 name = "cck"
 path = "./src/bin/cli/main.rs"
+required-features = ["alloc"]
 
 [[bin]]
 name = "cckd"
 path = "./src/bin/broker/main.rs"
+required-features = ["alloc"]
 
 [dependencies]
 
