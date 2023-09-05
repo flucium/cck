@@ -15,20 +15,20 @@ pub use aead::{arrayvec::ArrayVec, Buffer, KeyInit};
 pub(super) fn aead_encrypt_in_place(
     aead: impl AeadInPlace,
     nonce: &[u8],
-    aad: &[u8],
+    associated_data: &[u8],
     buffer: &mut dyn Buffer,
 ) -> Result<()> {
-    aead.encrypt_in_place(nonce.into(), aad, buffer)
+    aead.encrypt_in_place(nonce.into(), associated_data, buffer)
         .map_err(|_| Error)
 }
 
 pub(super) fn aead_decrypt_in_place(
     aead: impl AeadInPlace,
     nonce: &[u8],
-    aad: &[u8],
+    associated_data: &[u8],
     buffer: &mut dyn Buffer,
 ) -> Result<()> {
-    aead.decrypt_in_place(nonce.into(), aad, buffer)
+    aead.decrypt_in_place(nonce.into(), associated_data, buffer)
         .map_err(|_| Error)
 }
 
@@ -36,13 +36,13 @@ pub(super) fn aead_decrypt_in_place(
 pub(super) fn aead_encrypt(
     aead: impl AeadInPlace,
     nonce: &[u8],
-    aad: &[u8],
+    associated_data: &[u8],
     message: &[u8],
 ) -> Result<Vec<u8>> {
     aead.encrypt(
         nonce.into(),
         Payload {
-            aad: aad,
+            aad: associated_data,
             msg: message,
         },
     )
@@ -53,13 +53,13 @@ pub(super) fn aead_encrypt(
 pub(super) fn aead_decrypt(
     aead: impl AeadInPlace,
     nonce: &[u8],
-    aad: &[u8],
+    associated_data: &[u8],
     message: &[u8],
 ) -> Result<Vec<u8>> {
     aead.decrypt(
         nonce.into(),
         Payload {
-            aad: aad,
+            aad: associated_data,
             msg: message,
         },
     )
