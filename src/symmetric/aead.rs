@@ -12,8 +12,8 @@ use aead::AeadInPlace;
 
 pub use aead::{arrayvec::ArrayVec, Buffer, KeyInit};
 
-pub(super) fn aead_encrypt_in_place(
-    aead: impl AeadInPlace,
+pub fn aead_encrypt_in_place(
+    aead: &impl AeadInPlace,
     nonce: &[u8],
     associated_data: &[u8],
     buffer: &mut dyn Buffer,
@@ -22,8 +22,8 @@ pub(super) fn aead_encrypt_in_place(
         .map_err(|_| Error)
 }
 
-pub(super) fn aead_decrypt_in_place(
-    aead: impl AeadInPlace,
+pub fn aead_decrypt_in_place(
+    aead: &impl AeadInPlace,
     nonce: &[u8],
     associated_data: &[u8],
     buffer: &mut dyn Buffer,
@@ -33,8 +33,8 @@ pub(super) fn aead_decrypt_in_place(
 }
 
 #[cfg(feature = "alloc")]
-pub(super) fn aead_encrypt(
-    aead: impl AeadInPlace,
+pub fn aead_encrypt(
+    aead: &impl AeadInPlace,
     nonce: &[u8],
     associated_data: &[u8],
     message: &[u8],
@@ -50,8 +50,8 @@ pub(super) fn aead_encrypt(
 }
 
 #[cfg(feature = "alloc")]
-pub(super) fn aead_decrypt(
-    aead: impl AeadInPlace,
+pub fn aead_decrypt(
+    aead: &impl AeadInPlace,
     nonce: &[u8],
     associated_data: &[u8],
     message: &[u8],
