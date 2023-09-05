@@ -88,6 +88,35 @@ fn pem_decode(b: &mut Bencher) {
     });
 }
 
+#[cfg(feature = "alloc")]
+#[bench]
+fn pem_encode_string(b: &mut Bencher) {
+    // ed25519 private key
+    const PRIVATE_KEY: [u8; 32] = [
+        68, 87, 109, 156, 131, 213, 127, 10, 63, 10, 61, 181, 243, 100, 121, 102, 53, 62, 215, 212,
+        67, 223, 238, 9, 34, 39, 44, 10, 51, 2, 56, 96,
+    ];
+
+    b.iter(|| {
+        cck::format::pem_encode_string(cck::format::PEM_LABEL_PRIVATE_KEY, &PRIVATE_KEY).unwrap();
+    });
+}
+
+#[cfg(feature = "alloc")]
+#[bench]
+fn pem_decode_vec(b: &mut Bencher) {
+    const PRIVATE_KEY_PEM:&str = "-----BEGIN PRIVATE KEY-----\nRFdtnIPVfwo/Cj2182R5ZjU+19RD3+4JIicsCjMCOGA=\n-----END PRIVATE KEY-----\n";
+
+
+    b.iter(|| {
+        cck::format::pem_decode_vec(
+            cck::format::PEM_LABEL_PRIVATE_KEY,
+            PRIVATE_KEY_PEM,
+        )
+        .unwrap();
+    });
+}
+
 #[bench]
 fn hex_encode(b: &mut Bencher) {
     // hello: [104, 101, 108, 108, 111]
