@@ -1,25 +1,26 @@
 // e.g.
 // cargo bench --package cck --bench asymmetric -- --exact --nocapture
-// cargo bench --package cck --bench asymmetric -- ed25519_gen_keypair --exact --nocapture
+// cargo bench --package cck --bench asymmetric -- ed25519_gen_private_key --exact --nocapture
 // cargo bench --package cck --bench asymmetric -- ed25519_sign --exact --nocapture
 
 #![feature(test)]
 extern crate test;
 use test::Bencher;
 
-#[bench]
-fn ed25519_gen_keypair(b: &mut Bencher) {
-    b.iter(|| cck::asymmetric::ed25519_gen_keypair());
-}
+// #[bench]
+// fn ed25519_gen_keypair(b: &mut Bencher) {
+//     b.iter(|| cck::asymmetric::ed25519_gen_keypair());
+// }
 
 #[bench]
 fn ed25519_gen_private_key(b: &mut Bencher) {
-    b.iter(|| cck::asymmetric::ed25519_gen_private_key());
+    b.iter(|| cck::asymmetric::ed25519::gen_private_key());
 }
 
 #[bench]
 fn ed25519_gen_public_key(b: &mut Bencher) {
-    b.iter(|| cck::asymmetric::ed25519_gen_public_key(&cck::asymmetric::ed25519_gen_private_key()));
+    let private_key = cck::asymmetric::ed25519::gen_private_key();
+    b.iter(|| cck::asymmetric::ed25519::gen_public_key(&private_key));
 }
 
 #[bench]
@@ -32,7 +33,7 @@ fn ed25519_sign(b: &mut Bencher) {
     // hello: [104, 101, 108, 108, 111]
     const MESSAGE: [u8; 5] = [104, 101, 108, 108, 111];
 
-    b.iter(|| cck::asymmetric::ed25519_sign(&PRIVATE_KEY, &MESSAGE));
+    b.iter(|| cck::asymmetric::ed25519::sign(&PRIVATE_KEY, &MESSAGE));
 }
 
 #[bench]
@@ -52,22 +53,18 @@ fn ed25519_verify(b: &mut Bencher) {
         79, 41, 22, 42, 3,
     ];
 
-    b.iter(|| cck::asymmetric::ed25519_verify(&PUBLIC_KEY, &MESSAGE, &SIGNATURE));
-}
-
-#[bench]
-fn x25519_gen_keypair(b: &mut Bencher) {
-    b.iter(|| cck::asymmetric::x25519_gen_keypair());
+    b.iter(|| cck::asymmetric::ed25519::verify(&PUBLIC_KEY, &MESSAGE, &SIGNATURE));
 }
 
 #[bench]
 fn x25519_gen_private_key(b: &mut Bencher) {
-    b.iter(|| cck::asymmetric::x25519_gen_private_key());
+    b.iter(|| cck::asymmetric::x25519::gen_private_key());
 }
 
 #[bench]
 fn x25519_gen_public_key(b: &mut Bencher) {
-    b.iter(|| cck::asymmetric::x25519_gen_public_key(&cck::asymmetric::x25519_gen_private_key()));
+    let private_key = cck::asymmetric::x25519::gen_private_key();
+    b.iter(|| cck::asymmetric::x25519::gen_public_key(&private_key));
 }
 
 #[bench]
@@ -82,5 +79,5 @@ fn x25519_diffie_hellman(b: &mut Bencher) {
         134, 137, 212, 88, 80, 229, 179, 223, 163, 149, 187, 10,
     ];
 
-    b.iter(|| cck::asymmetric::x25519_diffie_hellman(&PRIVATE_KEY, &PUBLIC_KEY));
+    b.iter(|| cck::asymmetric::x25519::diffie_hellman(&PRIVATE_KEY, &PUBLIC_KEY));
 }
