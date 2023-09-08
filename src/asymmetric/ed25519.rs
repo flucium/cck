@@ -6,11 +6,10 @@ pub fn gen_private_key() -> [u8; SIZE_32] {
     ed25519_dalek::SigningKey::generate(&mut crate::rand::Rand).to_bytes()
 }
 
-pub fn gen_public_key(private_key: &[u8; SIZE_32]) -> crate::Result<[u8; SIZE_32]> {
-    let verifyingkey =
-        ed25519_dalek::VerifyingKey::from_bytes(private_key).map_err(|_| crate::Error)?;
-
-    Ok(verifyingkey.to_bytes())
+pub fn gen_public_key(private_key: &[u8; SIZE_32]) -> [u8; SIZE_32] {
+    ed25519_dalek::SigningKey::from_bytes(private_key)
+        .verifying_key()
+        .to_bytes()
 }
 
 pub fn sign(private_key: &[u8; SIZE_32], message: &[u8]) -> crate::Result<[u8; SIZE_64]> {
