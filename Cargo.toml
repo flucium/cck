@@ -28,6 +28,7 @@ rand_chacha = "0.3.1"
 #https://github.com/RustCrypto/traits/
 aead = { version = "0.5.2", features=["arrayvec"] }
 digest = "0.10.7"
+signature = "2.1.0"
 
 #https://github.com/RustCrypto/AEADs/
 chacha20poly1305 = "0.10.1"
@@ -51,7 +52,9 @@ x25519-dalek = {version="2.0.0", features=["static_secrets"]}
 #https://github.com/rust-lang/flate2-rs
 flate2 = "1.0.27"
 
+#https://github.com/SergioBenitez/Rocket/
+rocket = { version = "0.5.0-rc.3", features = ["http2", "tls", "json"] }
 
 [features]
-alloc = ["base64ct/alloc", "aead/alloc", "chacha20poly1305/alloc"] #  "pem-rfc7468/alloc"
+alloc = ["base64ct/alloc", "aead/alloc", "chacha20poly1305/alloc", "pem-rfc7468/alloc"]
 #std = []
