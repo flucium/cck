@@ -139,3 +139,20 @@ fn hex_decode(b: &mut Bencher) {
         cck::format::hex_decode(HEX, &mut buffer);
     });
 }
+
+#[cfg(feature = "alloc")]
+#[bench]
+fn hex_encode_string(b: &mut Bencher) {
+    // hello: [104, 101, 108, 108, 111]
+    b.iter(|| {
+        cck::format::hex_encode_string(&[104, 101, 108, 108, 111]);
+    });
+}
+
+#[cfg(feature = "alloc")]
+#[bench]
+fn hex_decode_vec(b: &mut Bencher) {
+    b.iter(|| {
+        cck::format::hex_decode_vec("68656c6c6f");
+    });
+}
