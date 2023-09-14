@@ -32,6 +32,7 @@ signature = "2.1.0"
 
 #https://github.com/RustCrypto/AEADs/
 chacha20poly1305 = "0.10.1"
+aes-gcm = "0.10.2"
 
 #https://github.com/RustCrypto/hashes
 sha2 = "0.10.7"
