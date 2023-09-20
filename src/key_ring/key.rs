@@ -1,19 +1,5 @@
 use core::{default::Default, fmt};
 
-pub struct Expire((u8, u8, u8, u8, u8, u8, u8, u8));
-
-impl Expire {
-    pub const fn new() -> Self {
-        Self((0, 0, 0, 0, 0, 0, 0, 0))
-    }
-}
-
-impl Default for Expire {
-    fn default() -> Self {
-        Self((0, 0, 0, 0, 0, 0, 0, 0))
-    }
-}
-
 use crate::{
     asymmetric::ed25519,
     hash,
@@ -55,9 +41,10 @@ impl Key {
         self
     }
 
-    pub fn derive_key(&self, key_type: KeyType) -> Key {
-        todo!()
-    }
+    // ToDo!
+    // pub fn derive_key(&self, key_type: KeyType) -> Key {
+    //     todo!()
+    // }
 
     pub fn is_master(&self) -> bool {
         self.master
@@ -109,6 +96,20 @@ impl fmt::Display for KeyType {
 impl Default for KeyType {
     fn default() -> Self {
         Self::Ed25519
+    }
+}
+
+pub struct Expire((u8, u8, u8, u8, u8, u8, u8, u8));
+
+impl Expire {
+    pub const fn new() -> Self {
+        Self((0, 0, 0, 0, 0, 0, 0, 0))
+    }
+}
+
+impl Default for Expire {
+    fn default() -> Self {
+        Self((0, 0, 0, 0, 0, 0, 0, 0))
     }
 }
 
