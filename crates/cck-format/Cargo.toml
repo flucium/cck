@@ -1,0 +1,18 @@
+[package]
+name = "cck-format"
+version = "0.0.1"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+#https://github.com/RustCrypto/formats/
+base64ct = "1.6.0"
+pem-rfc7468 = "0.7.0"
+
+#Internal
+cck-common={path="../cck-common",version="0.0.1"}
+
+
+[features]
+alloc = ["base64ct/alloc" , "pem-rfc7468/alloc"]
+

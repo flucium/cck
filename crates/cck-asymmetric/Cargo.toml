@@ -1,0 +1,20 @@
+[package]
+name = "cck-asymmetric"
+version = "0.0.1"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+#https://github.com/RustCrypto/traits/
+signature = "2.1.0"
+
+#https://github.com/dalek-cryptography/ed25519-dalek/
+ed25519-dalek = {version="2.0.0", features=["rand_core"]}
+
+#https://github.com/dalek-cryptography/x25519-dalek/
+x25519-dalek = {version="2.0.0", features=["static_secrets"]}
+
+#Internal
+cck-common={path="../cck-common",version="0.0.1"}
+
+[features]
