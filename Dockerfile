@@ -9,6 +9,4 @@ mkdir /repos
 
 ENV PATH="/root/.cargo/bin:$PATH"
 
-EXPOSE 8080
-
 CMD /bin/bash
