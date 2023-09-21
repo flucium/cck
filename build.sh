@@ -22,10 +22,11 @@ if [ $1 = "release" ]; then
     # dir=cck-`git rev-parse --abbrev-ref @`-$os-$arch
     dir=cck-$version-$os-$arch
 
-    cargo build --features=alloc --release && \
+    cargo build --release --bin cck && \
+    cargo build --release --bin cckd && \
     mkdir $dir && cp -r ./target/release/* $dir/ && cp ./LICENSE $dir/LICENSE && cp ./README.md $dir/README.md && cp ./image.png $dir/image.png && \
     tar -zcvf $dir.tar.gz ./$dir && \
     rm -r ./$dir
 else
-    cargo build --features=alloc
+    cargo build
 fi
