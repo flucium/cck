@@ -1,12 +1,20 @@
+// #[cfg(feature = "alloc")]
+// extern crate alloc;
+
+// #[cfg(feature = "alloc")]
+// use alloc::{str::*, string::String, vec::Vec};
+
 use core::{default::Default, fmt};
 
 use crate::{
     asymmetric::ed25519,
     hash,
+    rand::gen_32,
     size::{SIZE_32, SIZE_64},
 };
 
 pub struct Key {
+    id: [u8; SIZE_32],
     master: bool,
     key_type: KeyType,
     expire: Expire,
@@ -17,6 +25,8 @@ pub struct Key {
 
 impl Key {
     pub fn generate(key_type: KeyType) -> crate::Result<Self> {
+        let id = gen_32();
+
         let (private_key, public_key) = match key_type {
             KeyType::Ed25519 => {
                 let private_key = ed25519::gen_private_key();
@@ -27,6 +37,7 @@ impl Key {
         };
 
         Ok(Self {
+            id: id,
             master: true,
             key_type: key_type,
             expire: Expire::new(),
@@ -39,6 +50,10 @@ impl Key {
     pub fn set_expire(&mut self, expire: Expire) -> &mut Self {
         self.expire = expire;
         self
+    }
+
+    pub fn id(&self) -> [u8; SIZE_32] {
+        self.id
     }
 
     // ToDo!
@@ -77,6 +92,28 @@ impl Key {
         hash::blake3_digest(&self.public_key, &[])
     }
 }
+
+// impl From<&[u8]> for Key {
+//     fn from(bytes: &[u8]) -> Self {
+//         //parse
+//         todo!()
+//     }
+// }
+
+// impl From<&str> for Key {
+//     fn from(string: &str) -> Self {
+//         //parse
+//         todo!()
+//     }
+// }
+
+// #[cfg(feature = "alloc")]
+// impl From<String> for Key {
+//     fn from(string: String) -> Self {
+//         //parse
+//         todo!()
+//     }
+// }
 
 #[derive(Debug)]
 pub enum KeyType {
