@@ -56,7 +56,7 @@ impl ToString for Certificate {
             cck_format::base64ct::encode_string(&self.public_key)
         );
 
-        // let fingerprint = format!("Fingerprint{}",cck);
+        let fingerprint = format!("Fingerprint:{}",unsafe{String::from_utf8_unchecked(self.fingerprint.clone())});
 
         let mut string = String::new();
 
@@ -66,6 +66,8 @@ impl ToString for Certificate {
 
         string.push_str(&public_key);
 
+        string.push_str(&fingerprint);
+        
         string
     }
 }
@@ -76,7 +78,7 @@ fn parse(string: impl Into<String>) -> cck_common::Result<Certificate> {
     let entries = string.split('\n').collect::<Vec<&str>>();
 
     if entries.len() != 4 {
-        // Err
+        Err(cck_common::Error)?
     }
 
     let mut expiry: Expiry = Expiry::default();
@@ -90,7 +92,7 @@ fn parse(string: impl Into<String>) -> cck_common::Result<Certificate> {
     for entry in entries {
         match entry.split_once(':') {
             None => {
-                //Err
+                Err(cck_common::Error)?
             }
             Some((key, value)) => match key {
                 "Expiry" => {
