@@ -1,7 +1,7 @@
 /// 64-byte
 pub const SIZE_64: usize = 64;
 
-//// 32-byte
+/// 32-byte
 pub const SIZE_32: usize = 32;
 
 /// 24-byte
