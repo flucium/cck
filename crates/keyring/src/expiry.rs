@@ -15,6 +15,14 @@ impl Expiry {
     }
 }
 
+impl From<(u8, u8, u8, u8, u8, u8, u8, u8)> for Expiry {
+    fn from(value: (u8, u8, u8, u8, u8, u8, u8, u8)) -> Self {
+        Self(
+            value.0, value.1, value.2, value.3, value.4, value.5, value.6, value.7,
+        )
+    }
+}
+
 impl Default for Expiry {
     fn default() -> Self {
         Self(0, 0, 0, 0, 0, 0, 0, 0)
