@@ -1,0 +1,1 @@
+cargo -q bench --features=alloc --package cck-compress --bench deflate -- --exact --nocapture
