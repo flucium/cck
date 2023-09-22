@@ -1,7 +1,10 @@
 use cck_common::size::SIZE_32;
-pub const BLAKE3_DEFAULT_CONTEXT:&str = "";
 
-/// BLAKE3
+pub const BLAKE3_DEFAULT_CONTEXT:&str = "cck-hash-blake3-default-context";
+
+pub const BLAKE3_KEYED_DEFAULT_CONTEXT:&str = "cck-hash-blake3-keyed-default-context";
+
+/// BLAKE3 is a cryptographic hash function that is:
 /// 
 /// # Example
 /// ```
@@ -15,7 +18,7 @@ pub fn digest(bytes: &[u8], salt: &[u8]) -> [u8; SIZE_32] {
         .into()
 }
 
-/// BLAKE3 derive key with context
+/// BLAKE3 derive key with context is a cryptographic hash function and key derivation function that is:
 /// 
 /// # Example
 /// ```
@@ -29,7 +32,7 @@ pub fn derive_key(context: &str, material: &[u8], salt: &[u8]) -> [u8; SIZE_32] 
         .into()
 }
 
-/// BLAKE3 Message Authentication Code
+/// BLAKE3 Message Authentication Code is a cryptographic hash function and Message Authentication Code with key that is:
 /// 
 /// # Example
 /// ```
@@ -43,7 +46,7 @@ pub fn mac(key: &[u8; SIZE_32], message: &[u8], salt: &[u8]) -> [u8; SIZE_32] {
         .into()
 }
 
-/// BLAKE3 Extendable Output Function (XOF)
+/// BLAKE3 Extendable Output Function (XOF) is a cryptographic hash function and Extaendable mode that is:
 /// 
 /// # Example
 /// ```
@@ -59,7 +62,7 @@ pub fn xof_digest(bytes: &[u8], salt: &[u8], buffer: &mut [u8]) {
         .fill(buffer)
 }
 
-/// BLAKE3 derive key with context and XOF
+/// BLAKE3 derive key with context and XOF is a cryptographic hash function and key derivation function and Extendable mode that is:
 /// 
 /// # Example
 /// ```
@@ -75,7 +78,7 @@ pub fn xof_derive_key(context: &str, material: &[u8], salt: &[u8], buffer: &mut 
         .fill(buffer)
 }
 
-/// BLAKE3 Message Authentication Code and XOF
+/// BLAKE3 Message Authentication Code and XOF is a cryptographic hash function and Message Authentication Code with key and Extendable mode that is:
 /// 
 /// # Example
 /// ```
