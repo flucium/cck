@@ -12,3 +12,4 @@ flate2 = "1.0.27"
 cck-common={path="../cck-common",version="0.0.1"}
 
 [features]
+alloc = []
