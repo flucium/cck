@@ -7,12 +7,12 @@ pub enum KeyType {
 }
 
 impl KeyType {
-    fn as_bytes(&self) -> &[u8] {
-        match self {
-            KeyType::Ed25519 => &[69, 100, 50, 53, 53, 49, 57],
-            KeyType::X25519 => &[88, 50, 53, 53, 49, 57],
-        }
-    }
+    // fn as_bytes(&self) -> &[u8] {
+    //     match self {
+    //         KeyType::Ed25519 => &[69, 100, 50, 53, 53, 49, 57],
+    //         KeyType::X25519 => &[88, 50, 53, 53, 49, 57],
+    //     }
+    // }
 
     // fn to_bytes(&self) -> Vec<u8> {
     //     match self {
