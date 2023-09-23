@@ -1,0 +1,1 @@
+cargo -q bench --package cck-rand --bench rand -- --exact --nocapture
