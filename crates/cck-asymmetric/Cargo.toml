@@ -16,5 +16,7 @@ x25519-dalek = {version="2.0.0", features=["static_secrets"]}
 
 #Internal
 cck-common={path="../cck-common",version="0.0.1"}
+cck-rand={path="../cck-rand",version="0.0.1"}
+
 
 [features]

@@ -1,4 +1,5 @@
-use cck_common::{rand::Rand, size::SIZE_32};
+use cck_common::size::SIZE_32;
+use cck_rand::*;
 
 pub fn gen_private_key() -> [u8; SIZE_32] {
     x25519_dalek::StaticSecret::random_from_rng(&mut Rand).to_bytes()

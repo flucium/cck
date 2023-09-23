@@ -1,8 +1,10 @@
 use cck_common::{
-    rand::Rand,
     size::{SIZE_32, SIZE_64},
     Error, Result,
 };
+
+use cck_rand::*;
+
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 
 pub fn gen_private_key() -> [u8; SIZE_32] {
