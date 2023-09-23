@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-#[derive(Debug)]
+#[derive(Debug,PartialEq, Eq)]
 pub enum KeyType {
     Ed25519,
     X25519,
