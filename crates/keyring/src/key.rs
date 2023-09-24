@@ -37,6 +37,7 @@ pub trait Key {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PublicKey {
     primary: bool,
     key_type: KeyType,
@@ -99,6 +100,7 @@ impl ToString for PublicKey {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PrivateKey {
     pub(super) primary: bool,
     pub(super) key_type: KeyType,
