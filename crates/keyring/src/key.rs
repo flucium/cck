@@ -6,6 +6,7 @@ use crate::{
     Expiry, KeyType,
 };
 
+/// Key trait for public and private keys
 pub trait Key {
     fn is_primary(&self) -> bool;
 
@@ -29,6 +30,7 @@ pub trait Key {
         signature: Option<Vec<u8>>,
     ) -> Self;
 
+    /// Convert the key to string
     fn from_string(string: impl Into<String>) -> cck_common::Result<Self>
     where
         Self: Sized,
@@ -37,6 +39,14 @@ pub trait Key {
     }
 }
 
+/// PublicKey
+///
+/// # Example
+/// ```
+/// let private_key = PrivateKey::generate(KeyType::Ed25519)
+///
+/// let public_key = private_key.public_key();
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PublicKey {
     primary: bool,
@@ -47,36 +57,63 @@ pub struct PublicKey {
 }
 
 impl Key for PublicKey {
+    
+    /// Returns true if the key is primary
     fn is_primary(&self) -> bool {
         self.primary
     }
 
+    /// Returns the key type
     fn key_type(&self) -> &KeyType {
         &self.key_type
     }
 
+    /// Returns the expiry of the key
     fn expiry(&self) -> &Expiry {
         &self.expiry
     }
 
+    /// Returns the raw public key bytes
+    /// 
+    /// Note that to_string returns in CCK Format, while as_bytes returns only public key bytes.
+    /// 
+    /// # Example
+    /// ```
+    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
+    /// 
+    /// let public_key:PublicKey = private_key.public_key();
+    /// 
+    /// let bytes:&[u8] = public_key.as_bytes();
+    /// ```
     fn as_bytes(&self) -> &[u8] {
         &self.public_key
     }
 
+    /// Returns the signature of the key
     fn signature(&self) -> Option<&[u8]> {
         Some(self.signature.as_ref()?)
     }
 
+    /// Returns the fingerprint of the key
     fn fingerprint(&self) -> String {
         let public_key = self.public_key.as_ref();
 
         crate::fingerprint::blake3_digest(public_key)
     }
 
+    /// Returns true if the key is a private key
+    /// 
+    /// Note that this is a public key, so it returns false.
     fn is_private_key(&self) -> bool {
         false
     }
 
+    /// Generates based on types and structures.
+    ///
+    /// # Example
+    /// ```
+    /// let public_key = PublicKey::from(true, KeyType::Ed25519, Expiry::default(), vec![0; 32], None);
+    /// ```
     fn from(
         primary: bool,
         key_type: KeyType,
@@ -95,11 +132,39 @@ impl Key for PublicKey {
 }
 
 impl ToString for PublicKey {
+    /// Convert the public key to string
+    ///
+    /// Format is:
+    ///
+    /// *Primary: true*
+    ///
+    /// *KeyType: Ed25519*
+    ///
+    /// *Expiry: 2023/01/01*
+    ///
+    /// *Key: aaaaaaaaaa...*
+    ///
+    /// *Fingerprint: blake3:aaaaaaaaaa...*
+    ///
+    /// *Signature: aaaaaaaaaa...*
+    ///
+    /// # Example
+    /// ```
+    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
+    ///
+    /// let string = private_key.to_string();
+    /// ```
     fn to_string(&self) -> String {
         encode(self)
     }
 }
 
+/// PrivateKey
+///
+/// # Example
+/// ```
+/// let private_key = PrivateKey::generate(KeyType::Ed25519)
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PrivateKey {
     pub(super) primary: bool,
@@ -111,36 +176,58 @@ pub struct PrivateKey {
 }
 
 impl Key for PrivateKey {
+    /// Returns true if the key is primary
     fn is_primary(&self) -> bool {
         self.primary
     }
 
+    /// Returns the key type
     fn key_type(&self) -> &KeyType {
         &self.key_type
     }
 
+    /// Returns the expiry of the key
     fn expiry(&self) -> &Expiry {
         &self.expiry
     }
 
+    /// Returns the raw private key bytes
+    ///
+    /// Note that to_string returns in CCK Format, while as_bytes returns only private key bytes.
+    ///
+    /// # Example
+    /// ```
+    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
+    ///
+    /// let bytes:&[u8] = private_key.as_bytes();
+    /// ```
     fn as_bytes(&self) -> &[u8] {
         &self.private_key
     }
 
+    /// Returns the signature of the key
     fn signature(&self) -> Option<&[u8]> {
         Some(self.signature.as_ref()?)
     }
 
+    /// Returns the fingerprint of the key
     fn fingerprint(&self) -> String {
         let public_key = self.public_key.as_ref();
 
         crate::fingerprint::blake3_digest(public_key)
     }
 
+    /// Returns true if the key is a private key
     fn is_private_key(&self) -> bool {
         true
     }
 
+    /// Generates based on types and structures.
+    ///
+    /// # Example
+    /// ```
+    /// let private_key = PrivateKey::from(true, KeyType::Ed25519, Expiry::default(), vec![0; 32], None);
+    /// ```
     fn from(
         primary: bool,
         key_type: KeyType,
@@ -171,6 +258,12 @@ impl Key for PrivateKey {
 }
 
 impl PrivateKey {
+    /// Generate a new private key
+    ///
+    /// # Example
+    /// ```
+    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
+    /// ```
     pub fn generate(key_type: KeyType) -> Self {
         let (private_key, public_key) = match key_type {
             KeyType::Ed25519 => {
@@ -196,6 +289,16 @@ impl PrivateKey {
         }
     }
 
+    /// Set the key as primary
+    ///
+    /// Can only be set as primary if the key type is a digital signature key such as Ed25519.
+    ///
+    /// # Example
+    /// ```
+    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
+    ///
+    /// let private_key = private_key.set_primary(true);
+    /// ```
     pub fn set_primary(&mut self, is_primary: bool) -> cck_common::Result<&mut Self> {
         if is_primary && !matches!(self.key_type, KeyType::Ed25519) {
             Err(cck_common::Error)?
@@ -205,12 +308,34 @@ impl PrivateKey {
         Ok(self)
     }
 
+    /// Set the expiry of the key
+    ///
+    /// Default is 0, which means no expiry
+    ///
+    /// # Example
+    /// ```
+    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
+    ///
+    /// let private_key = private_key.set_expiry(Expiry::new(2021, 12, 31));
+    /// ```
     pub fn set_expiry(&mut self, expiry: Expiry) -> &mut Self {
         self.expiry = expiry;
 
         self
     }
 
+    /// Derive a new key from the private key
+    ///
+    /// It can only be derived from the digital signature key.
+    ///
+    /// for example, it can be derived from Ed25519, but not from X25519.
+    ///
+    /// # Example
+    /// ```
+    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
+    ///
+    /// let derived_key = private_key.derive_key(KeyType::X25519);
+    /// ```
     pub fn derive_key(&self, key_type: KeyType) -> cck_common::Result<PrivateKey> {
         let mut private_key = match key_type {
             KeyType::Ed25519 => Self::generate(key_type),
@@ -239,6 +364,14 @@ impl PrivateKey {
         Ok(private_key)
     }
 
+    /// Get the public key from the private key
+    ///
+    /// # Example
+    /// ```
+    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
+    ///
+    /// let public_key:PublicKey = private_key.public_key();
+    /// ```
     pub fn public_key(&self) -> PublicKey {
         PublicKey {
             primary: self.primary,
@@ -251,117 +384,29 @@ impl PrivateKey {
 }
 
 impl ToString for PrivateKey {
+    /// Convert the private key to string
+    ///
+    /// Format is:
+    ///
+    /// *Primary: true*
+    ///
+    /// *KeyType: Ed25519*
+    ///
+    /// *Expiry: 2023/01/01*
+    ///
+    /// *Key: aaaaaaaaaa...*
+    ///
+    /// *Fingerprint: blake3:aaaaaaaaaa...*
+    ///
+    /// *Signature: aaaaaaaaaa...*
+    ///
+    /// # Example
+    /// ```
+    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
+    ///
+    /// let string = private_key.to_string();
+    /// ```
     fn to_string(&self) -> String {
         encode(self)
     }
 }
-
-// #[derive(Debug)]
-// pub struct Key {
-//     master: bool,
-//     key_type: KeyType,
-//     expiry: Expiry,
-//     private_key: Vec<u8>,
-//     public_key: Vec<u8>,
-//     signature: Option<Vec<u8>>,
-// }
-
-// impl Key {
-//     pub fn generate(key_type: KeyType) -> Self {
-//         let (private_key, public_key) = match key_type {
-//             KeyType::Ed25519 => {
-//                 let private_key = cck_asymmetric::ed25519::gen_private_key();
-//                 let public_key = cck_asymmetric::ed25519::gen_public_key(&private_key);
-//                 (private_key.to_vec(), public_key.to_vec())
-//             }
-
-//             KeyType::X25519 => {
-//                 let private_key = cck_asymmetric::x25519::gen_private_key();
-//                 let public_key = cck_asymmetric::x25519::gen_public_key(&private_key);
-//                 (private_key.to_vec(), public_key.to_vec())
-//             }
-//         };
-
-//         Self {
-//             master: false,
-//             key_type: key_type,
-//             expiry: Expiry::default(),
-//             private_key: private_key,
-//             public_key: public_key,
-//             signature: None,
-//         }
-//     }
-
-//     pub fn derive_key(&self, key_type: KeyType) -> cck_common::Result<Key> {
-//         let mut key = match key_type {
-//             KeyType::Ed25519 => Self::generate(key_type),
-//             KeyType::X25519 => Self::generate(key_type),
-//         };
-
-//         key.set_master(false).unwrap();
-
-//         let signature = match self.key_type {
-//             KeyType::Ed25519 => cck_asymmetric::ed25519::sign(
-//                 unsafe {
-//                     self.private_key
-//                         .get_unchecked(..SIZE_32)
-//                         .try_into()
-//                         .unwrap()
-//                 },
-//                 &key.public_key,
-//             )?
-//             .to_vec(),
-
-//             _ => Err(cck_common::Error)?,
-//         };
-
-//         key.signature = Some(signature);
-
-//         Ok(key)
-//     }
-
-//     pub fn set_expiry(&mut self, expiry: Expiry) -> &mut Self {
-//         self.expiry = expiry;
-
-//         self
-//     }
-
-//     pub fn set_master(&mut self, is_master: bool) -> cck_common::Result<&mut Self> {
-//         if is_master && !matches!(self.key_type, KeyType::Ed25519) {
-//             Err(cck_common::Error)?
-//         }
-
-//         self.master = is_master;
-//         Ok(self)
-//     }
-
-//     pub fn is_master(&self) -> bool {
-//         self.master
-//     }
-
-//     pub fn key_type(&self) -> &KeyType {
-//         &self.key_type
-//     }
-
-//     pub fn expiry(&self) -> &Expiry {
-//         &self.expiry
-//     }
-
-//     pub fn private_key(&self) -> &[u8] {
-//         &self.private_key
-//     }
-
-//     pub fn public_key(&self) -> &[u8] {
-//         &self.public_key
-//     }
-
-//     pub fn signature(&self) -> Option<&[u8]> {
-//         Some(self.signature.as_ref()?)
-//     }
-
-//     pub fn fingerprint(&self) -> String {
-//         let public_key = self.public_key.as_ref();
-
-//         crate::fingerprint::blake3_digest(public_key)
-//     }
-// }
