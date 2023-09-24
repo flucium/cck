@@ -1,5 +1,8 @@
 use cck_common::size::SIZE_64;
 
+/// Use BLAKE3 to generate fingerprint.
+/// 
+/// Returns the fingerprint of the key.
 pub fn blake3_digest(key: &[u8]) -> String {
     let mut string = String::new();
 
