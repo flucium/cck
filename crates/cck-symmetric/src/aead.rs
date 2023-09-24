@@ -13,6 +13,17 @@ use aead::AeadInPlace;
 
 pub use aead::{arrayvec::ArrayVec, Buffer, KeyInit};
 
+/// Encrypts the given message with the given nonce and associated data.
+/// 
+/// # Arguments
+/// 
+/// * `aead` - The AEAD algorithm to use.
+/// 
+/// * `nonce` - The nonce to use.
+/// 
+/// * `associated_data` - The associated data to use.
+/// 
+/// * `buffer` - The message to encrypt.
 pub fn aead_encrypt_in_place(
     aead: &impl AeadInPlace,
     nonce: &[u8],
@@ -23,6 +34,17 @@ pub fn aead_encrypt_in_place(
         .map_err(|_| Error)
 }
 
+/// Decrypts the given message with the given nonce and associated data.
+/// 
+/// # Arguments
+/// 
+/// * `aead` - The AEAD algorithm to use.
+/// 
+/// * `nonce` - The nonce to use.
+/// 
+/// * `associated_data` - The associated data to use.
+/// 
+/// * `buffer` - The message(cipher) to decrypt.
 pub fn aead_decrypt_in_place(
     aead: &impl AeadInPlace,
     nonce: &[u8],
@@ -33,6 +55,21 @@ pub fn aead_decrypt_in_place(
         .map_err(|_| Error)
 }
 
+/// Encrypts the given message with the given nonce and associated data.
+/// 
+/// # Arguments
+/// 
+/// * `aead` - The AEAD algorithm to use.
+/// 
+/// * `nonce` - The nonce to use.
+/// 
+/// * `associated_data` - The associated data to use.
+/// 
+/// * `message` - The message to encrypt.
+/// 
+/// # Returns
+/// 
+/// The encrypted message.
 #[cfg(feature = "alloc")]
 pub fn aead_encrypt(
     aead: &impl AeadInPlace,
@@ -50,6 +87,21 @@ pub fn aead_encrypt(
     .map_err(|_| Error)
 }
 
+/// Decrypts the given message with the given nonce and associated data.
+/// 
+/// # Arguments
+/// 
+/// * `aead` - The AEAD algorithm to use.
+/// 
+/// * `nonce` - The nonce to use.
+/// 
+/// * `associated_data` - The associated data to use.
+/// 
+/// * `message` - The message(cipher) to decrypt.
+/// 
+/// # Returns
+/// 
+/// The decrypted message.
 #[cfg(feature = "alloc")]
 pub fn aead_decrypt(
     aead: &impl AeadInPlace,
