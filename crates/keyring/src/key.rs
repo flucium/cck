@@ -1,7 +1,10 @@
 use cck_common::size::SIZE_32;
 use std::default::Default;
 
-use crate::{Expiry, KeyType};
+use crate::{
+    string::{decode, encode},
+    Expiry, KeyType,
+};
 
 pub trait Key {
     fn is_primary(&self) -> bool;
@@ -17,6 +20,21 @@ pub trait Key {
     fn fingerprint(&self) -> String;
 
     fn is_private_key(&self) -> bool;
+
+    fn from(
+        primary: bool,
+        key_type: KeyType,
+        expiry: Expiry,
+        key: Vec<u8>,
+        signature: Option<Vec<u8>>,
+    ) -> Self;
+
+    fn from_string(string: impl Into<String>) -> cck_common::Result<Self>
+    where
+        Self: Sized,
+    {
+        decode(string)
+    }
 }
 
 pub struct PublicKey {
@@ -57,15 +75,37 @@ impl Key for PublicKey {
     fn is_private_key(&self) -> bool {
         false
     }
+
+    fn from(
+        primary: bool,
+        key_type: KeyType,
+        expiry: Expiry,
+        key: Vec<u8>,
+        signature: Option<Vec<u8>>,
+    ) -> Self {
+        Self {
+            primary: primary,
+            key_type: key_type,
+            expiry: expiry,
+            public_key: key,
+            signature: signature,
+        }
+    }
+}
+
+impl ToString for PublicKey {
+    fn to_string(&self) -> String {
+        encode(self)
+    }
 }
 
 pub struct PrivateKey {
-    primary: bool,
-    key_type: KeyType,
-    expiry: Expiry,
-    private_key: Vec<u8>,
-    public_key: Vec<u8>,
-    signature: Option<Vec<u8>>,
+    pub(super) primary: bool,
+    pub(super) key_type: KeyType,
+    pub(super) expiry: Expiry,
+    pub(super) private_key: Vec<u8>,
+    pub(super) public_key: Vec<u8>,
+    pub(super) signature: Option<Vec<u8>>,
 }
 
 impl Key for PrivateKey {
@@ -97,6 +137,34 @@ impl Key for PrivateKey {
 
     fn is_private_key(&self) -> bool {
         true
+    }
+
+    fn from(
+        primary: bool,
+        key_type: KeyType,
+        expiry: Expiry,
+        key: Vec<u8>,
+        signature: Option<Vec<u8>>,
+    ) -> Self {
+        let public_key = match key_type {
+            KeyType::Ed25519 => cck_asymmetric::ed25519::gen_public_key(unsafe {
+                key.get_unchecked(..SIZE_32).try_into().unwrap()
+            })
+            .to_vec(),
+            KeyType::X25519 => cck_asymmetric::x25519::gen_public_key(unsafe {
+                key.get_unchecked(..SIZE_32).try_into().unwrap()
+            })
+            .to_vec(),
+        };
+
+        Self {
+            primary: primary,
+            key_type: key_type,
+            expiry: expiry,
+            private_key: key,
+            public_key: public_key,
+            signature: signature,
+        }
     }
 }
 
@@ -177,6 +245,12 @@ impl PrivateKey {
             public_key: self.public_key.clone(),
             signature: self.signature.clone(),
         }
+    }
+}
+
+impl ToString for PrivateKey {
+    fn to_string(&self) -> String {
+        encode(self)
     }
 }
 
