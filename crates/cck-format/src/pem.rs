@@ -25,6 +25,8 @@ pub const PEM_LABEL_CCK_PRIVATE_KEY: &Label = "CCK PRIVATE KEY";
 
 pub const PEM_LABEL_CCK_PUBLIC_KEY: &Label = "CCK PUBLIC KEY";
 
+pub const PEM_LABEL_MESSAGE:&Label = "CCK MESSAGE";
+
 /// Encode a PEM block.
 /// 
 /// # Example
