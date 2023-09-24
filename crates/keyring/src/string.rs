@@ -12,6 +12,24 @@ use crate::{Expiry, Key, KeyType};
     Fingerprint:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
     Signature:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
 */
+
+/// encode a key to a string
+/// 
+/// 
+/// Format example:
+/// 
+/// *Primary:true*
+/// 
+/// *KeyType:Ed25519*
+/// 
+/// *Expiry:2023/01/01*
+/// 
+/// *PublicKey:AAAAAAAAAAAAAAAAAA*
+/// 
+/// *Fingerprint:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=*
+/// 
+/// *Signature:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=*
+/// 
 pub fn encode(key: &impl Key) -> String {
     let primary = format!("Primary:{}\n", key.is_primary());
 
@@ -60,6 +78,7 @@ pub fn encode(key: &impl Key) -> String {
     string
 }
 
+/// decode a key from a string
 pub fn decode<T: Key>(string: impl Into<String>) -> cck_common::Result<T> {
     let string = string.into();
 
