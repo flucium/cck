@@ -31,12 +31,12 @@ pub fn encode(key: &impl Key) -> String {
     let k = if key.is_private_key() {
         format!(
             "PrivateKey:{}\n",
-            cck_format::base64ct::encode_string(key.as_bytes())
+            cck_format::base64ct::encode(key.as_bytes(), &mut [0u8; SIZE_64]).unwrap()
         )
     } else {
         format!(
             "PublicKey:{}\n",
-            cck_format::base64ct::encode_string(key.as_bytes())
+            cck_format::base64ct::encode(key.as_bytes(), &mut [0u8; SIZE_64]).unwrap()
         )
     };
 
@@ -45,7 +45,7 @@ pub fn encode(key: &impl Key) -> String {
     let signature = match key.signature() {
         Some(signature) => format!(
             "Signature:{}\n",
-            cck_format::base64ct::encode_string(signature)
+            cck_format::base64ct::encode(signature, &mut [0u8; SIZE_64]).unwrap()
         ),
         None => String::from_str("Signature:None").unwrap(),
     };
