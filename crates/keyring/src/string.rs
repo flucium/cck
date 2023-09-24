@@ -74,183 +74,27 @@ pub fn encode(key: &impl Key) -> String {
     string.push_str(&signature);
 
     string.push('\n');
-    
+
     string
 }
 
 /// decode a key from a string
 pub fn decode<T: Key>(string: impl Into<String>) -> cck_common::Result<T> {
     let string = string.into();
-    
+
     let mut lines = string.lines();
-
-    // let primary: bool = match lines.next() {
-    //     None => Err(cck_common::Error)?,
-    //     Some(line) => {
-    //         let (key, value) = match line.split_once(':') {
-    //             None => Err(cck_common::Error)?,
-    //             Some((key, value)) => (key, value),
-    //         };
-
-    //         if key != "Primary" {
-    //             Err(cck_common::Error)?
-    //         }
-
-    //         match value {
-    //             "true" => true,
-    //             "false" => false,
-    //             _ => Err(cck_common::Error)?,
-    //         }
-    //     }
-    // };
 
     let primary = parse_primary(lines.next().unwrap_or_default().to_string())?;
 
-    // let key_type: KeyType = match lines.next() {
-    //     None => Err(cck_common::Error)?,
-    //     Some(line) => {
-    //         let (key, value) = match line.split_once(':') {
-    //             None => Err(cck_common::Error)?,
-    //             Some((key, value)) => (key, value),
-    //         };
-
-    //         if key != "KeyType" {
-    //             Err(cck_common::Error)?
-    //         }
-
-    //         match value {
-    //             "Ed25519" => KeyType::Ed25519,
-    //             "X25519" => KeyType::X25519,
-    //             _ => Err(cck_common::Error)?,
-    //         }
-    //     }
-    // };
-
     let key_type = parse_key_type(lines.next().unwrap_or_default().to_string())?;
 
-    // let expiry: Expiry = match lines.next() {
-    //     None => Err(cck_common::Error)?,
-    //     Some(line) => {
-    //         let (key, value) = match line.split_once(':') {
-    //             None => Err(cck_common::Error)?,
-    //             Some((key, value)) => (key, value),
-    //         };
-
-    //         if key != "Expiry" {
-    //             Err(cck_common::Error)?
-    //         }
-
-    //         let value = value.split('/').collect::<Vec<&str>>();
-
-    //         if value.len() != 3 {
-    //             Err(cck_common::Error)?
-    //         }
-
-    //         if !value[0].parse::<usize>().unwrap() <= 9999 {
-    //             Err(cck_common::Error)?
-    //         }
-
-    //         if !value[1].parse::<usize>().unwrap() <= 12 {
-    //             Err(cck_common::Error)?
-    //         }
-
-    //         if !value[2].parse::<usize>().unwrap() <= 31 {
-    //             Err(cck_common::Error)?
-    //         }
-
-    //         let year = value[0]
-    //             .chars()
-    //             .map(|ch| ch.to_digit(10))
-    //             .collect::<Option<Vec<_>>>()
-    //             .unwrap();
-
-    //         let month = value[1]
-    //             .chars()
-    //             .map(|ch| ch.to_digit(10))
-    //             .collect::<Option<Vec<_>>>()
-    //             .unwrap();
-
-    //         let day = value[2]
-    //             .chars()
-    //             .map(|ch| ch.to_digit(10))
-    //             .collect::<Option<Vec<_>>>()
-    //             .unwrap();
-
-    //         let date = (
-    //             year[0] as u8,
-    //             year[1] as u8,
-    //             year[2] as u8,
-    //             year[3] as u8,
-    //             month[0] as u8,
-    //             month[1] as u8,
-    //             day[0] as u8,
-    //             day[1] as u8,
-    //         );
-
-    //         Expiry::from(date)
-    //     }
-    // };
-
     let expiry = parse_expiry(lines.next().unwrap_or_default().to_string())?;
-
-    // let key: Vec<u8> = match lines.next() {
-    //     None => Err(cck_common::Error)?,
-    //     Some(line) => {
-    //         let (key, value) = match line.split_once(':') {
-    //             None => Err(cck_common::Error)?,
-    //             Some((key, value)) => (key, value),
-    //         };
-
-    //         if key != "PrivateKey" && key != "PublicKey" {
-    //             Err(cck_common::Error)?
-    //         }
-
-    //         cck_format::base64ct::decode(value, &mut [0u8; SIZE_64])?.to_vec()
-    //     }
-    // };
 
     let key = parse_key(lines.next().unwrap_or_default().to_string())?;
 
     // ToDo!
-    // match lines.next() {
-    //     None => Err(cck_common::Error)?,
-    //     Some(line) => {
-    //         let (key, value) = match line.split_once(':') {
-    //             None => Err(cck_common::Error)?,
-    //             Some((key, value)) => (key, value),
-    //         };
-
-    //         if key != "Fingerprint" {
-    //             Err(cck_common::Error)?
-    //         }
-
-    //         value
-    //     }
-    // };
-
-    // ToDo!
     parse_fingerprint(lines.next().unwrap_or_default().to_string())?;
 
-    // let signature: Option<Vec<u8>> = match lines.next() {
-    //     None => None,
-    //     Some(line) => {
-    //         let (key, value) = match line.split_once(':') {
-    //             None => Err(cck_common::Error)?,
-    //             Some((key, value)) => (key, value),
-    //         };
-
-    //         if key != "Signature" {
-    //             Err(cck_common::Error)?
-    //         }
-
-    //         if value.len() == 0 {
-    //             None
-    //         } else {
-    //             Some(cck_format::base64ct::decode(value, &mut [0u8; SIZE_64])?.to_vec())
-    //         }
-    //     }
-    // };
-    
     let signature = parse_signature(lines.next().unwrap_or_default().to_string())?;
 
     Ok(T::from(primary, key_type, expiry, key, signature))
@@ -406,16 +250,15 @@ fn parse_signature(string: String) -> cck_common::Result<Option<Vec<u8>>> {
     match string.is_empty() {
         true => Ok(None),
         false => {
-            
             let (key, value) = match string.split_once(':') {
                 None => Err(cck_common::Error)?,
                 Some((key, value)) => (key, value),
             };
-            
+
             if key != "Signature" {
                 Err(cck_common::Error)?
             }
-            
+
             // ToDo!
             if value.len() == 0 {
                 Ok(None)
