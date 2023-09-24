@@ -4,15 +4,6 @@ use cck_common::size::SIZE_64;
 
 use crate::{Expiry, Key, KeyType};
 
-/*
-    Primary
-    KeyType:Ed25519
-    Expiry:2023/01/01
-    PublicKey:AAAAAAAAAAAAAAAAAA
-    Fingerprint:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
-    Signature:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
-*/
-
 /// encode a key to a string
 ///
 ///
