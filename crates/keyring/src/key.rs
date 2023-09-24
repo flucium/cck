@@ -15,6 +15,8 @@ pub trait Key {
     fn signature(&self) -> Option<&[u8]>;
 
     fn fingerprint(&self) -> String;
+
+    fn is_private_key(&self) -> bool;
 }
 
 pub struct PublicKey {
@@ -50,6 +52,10 @@ impl Key for PublicKey {
         let public_key = self.public_key.as_ref();
 
         crate::fingerprint::blake3_digest(public_key)
+    }
+
+    fn is_private_key(&self) -> bool {
+        false
     }
 }
 
@@ -87,6 +93,10 @@ impl Key for PrivateKey {
         let public_key = self.public_key.as_ref();
 
         crate::fingerprint::blake3_digest(public_key)
+    }
+
+    fn is_private_key(&self) -> bool {
+        true
     }
 }
 
