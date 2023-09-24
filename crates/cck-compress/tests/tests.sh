@@ -1,0 +1,1 @@
+cargo -q test --package cck-compress --test deflate --  --nocapture
