@@ -1,5 +1,12 @@
 use std::fmt::Display;
 
+/// KeyType is an enum that represents the type of key.
+/// 
+/// - *Ed25519 is a type of key that is used for signing and verifying.*
+/// 
+/// - *X25519 is a type of key that is used for Diffie-Hellman key exchange (key agreement).*
+///
+/// Only a signing key can be a Master Key.
 #[derive(Debug,PartialEq, Eq)]
 pub enum KeyType {
     Ed25519,
