@@ -3,6 +3,20 @@ use std::default::Default;
 
 use crate::{Expiry, KeyType};
 
+pub trait Key {
+    fn is_primary(&self) -> bool;
+
+    fn key_type(&self) -> &KeyType;
+
+    fn expiry(&self) -> &Expiry;
+
+    fn as_bytes(&self) -> &[u8];
+
+    fn signature(&self) -> Option<&[u8]>;
+
+    fn fingerprint(&self) -> String;
+}
+
 pub struct PublicKey {
     primary: bool,
     key_type: KeyType,
@@ -11,28 +25,28 @@ pub struct PublicKey {
     signature: Option<Vec<u8>>,
 }
 
-impl PublicKey {
-    pub fn as_bytes(&self) -> &[u8] {
-        &self.public_key
-    }
-
-    pub fn signature(&self) -> Option<&[u8]> {
-        Some(self.signature.as_ref()?)
-    }
-
-    pub fn expiry(&self) -> &Expiry {
-        &self.expiry
-    }
-
-    pub fn key_type(&self) -> &KeyType {
-        &self.key_type
-    }
-
-    pub fn is_primary(&self) -> bool {
+impl Key for PublicKey {
+    fn is_primary(&self) -> bool {
         self.primary
     }
 
-    pub fn fingerprint(&self) -> String {
+    fn key_type(&self) -> &KeyType {
+        &self.key_type
+    }
+
+    fn expiry(&self) -> &Expiry {
+        &self.expiry
+    }
+
+    fn as_bytes(&self) -> &[u8] {
+        &self.public_key
+    }
+
+    fn signature(&self) -> Option<&[u8]> {
+        Some(self.signature.as_ref()?)
+    }
+
+    fn fingerprint(&self) -> String {
         let public_key = self.public_key.as_ref();
 
         crate::fingerprint::blake3_digest(public_key)
@@ -46,6 +60,34 @@ pub struct PrivateKey {
     private_key: Vec<u8>,
     public_key: Vec<u8>,
     signature: Option<Vec<u8>>,
+}
+
+impl Key for PrivateKey {
+    fn is_primary(&self) -> bool {
+        self.primary
+    }
+
+    fn key_type(&self) -> &KeyType {
+        &self.key_type
+    }
+
+    fn expiry(&self) -> &Expiry {
+        &self.expiry
+    }
+
+    fn as_bytes(&self) -> &[u8] {
+        &self.private_key
+    }
+
+    fn signature(&self) -> Option<&[u8]> {
+        Some(self.signature.as_ref()?)
+    }
+
+    fn fingerprint(&self) -> String {
+        let public_key = self.public_key.as_ref();
+
+        crate::fingerprint::blake3_digest(public_key)
+    }
 }
 
 impl PrivateKey {
@@ -117,10 +159,6 @@ impl PrivateKey {
         Ok(private_key)
     }
 
-    pub fn as_bytes(&self) -> &[u8] {
-        &self.private_key
-    }
-
     pub fn public_key(&self) -> PublicKey {
         PublicKey {
             primary: self.primary,
@@ -129,28 +167,6 @@ impl PrivateKey {
             public_key: self.public_key.clone(),
             signature: self.signature.clone(),
         }
-    }
-
-    pub fn signature(&self) -> Option<&[u8]> {
-        Some(self.signature.as_ref()?)
-    }
-
-    pub fn expiry(&self) -> &Expiry {
-        &self.expiry
-    }
-
-    pub fn key_type(&self) -> &KeyType {
-        &self.key_type
-    }
-
-    pub fn is_primary(&self) -> bool {
-        self.primary
-    }
-
-    pub fn fingerprint(&self) -> String {
-        let public_key = self.public_key.as_ref();
-
-        crate::fingerprint::blake3_digest(public_key)
     }
 }
 
