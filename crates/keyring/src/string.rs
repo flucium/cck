@@ -14,22 +14,22 @@ use crate::{Expiry, Key, KeyType};
 */
 
 /// encode a key to a string
-/// 
-/// 
+///
+///
 /// Format example:
-/// 
+///
 /// *Primary:true*
-/// 
+///
 /// *KeyType:Ed25519*
-/// 
+///
 /// *Expiry:2023/01/01*
-/// 
+///
 /// *PublicKey:AAAAAAAAAAAAAAAAAA*
-/// 
+///
 /// *Fingerprint:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=*
-/// 
+///
 /// *Signature:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=*
-/// 
+///
 pub fn encode(key: &impl Key) -> String {
     let primary = format!("Primary:{}\n", key.is_primary());
 
@@ -142,7 +142,6 @@ pub fn decode<T: Key>(string: impl Into<String>) -> cck_common::Result<T> {
                 Err(cck_common::Error)?
             }
 
-            
             if !value[0].parse::<usize>().unwrap() <= 9999 {
                 Err(cck_common::Error)?
             }
@@ -157,18 +156,21 @@ pub fn decode<T: Key>(string: impl Into<String>) -> cck_common::Result<T> {
 
             let year = value[0]
                 .chars()
-                .map(|ch| ch as usize)
-                .collect::<Vec<usize>>();
+                .map(|ch| ch.to_digit(10))
+                .collect::<Option<Vec<_>>>()
+                .unwrap();
 
             let month = value[1]
                 .chars()
-                .map(|ch| ch as usize)
-                .collect::<Vec<usize>>();
+                .map(|ch| ch.to_digit(10))
+                .collect::<Option<Vec<_>>>()
+                .unwrap();
 
             let day = value[2]
                 .chars()
-                .map(|ch| ch as usize)
-                .collect::<Vec<usize>>();
+                .map(|ch| ch.to_digit(10))
+                .collect::<Option<Vec<_>>>()
+                .unwrap();
 
             let date = (
                 year[0] as u8,
