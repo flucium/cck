@@ -9,6 +9,8 @@ edition = "2021"
 
 #Internal
 cck-common={path="../cck-common",version="0.0.1"}
-
+cck-asymmetric={path="../cck-asymmetric",version="0.0.1"}
+cck-hash={path="../cck-hash",version="0.0.1"}
+cck-format={path="../cck-format",version="0.0.1"}
 
 [features]
