@@ -1,0 +1,114 @@
+use cck_common::size::SIZE_32;
+use std::default::Default;
+
+use crate::{Expiry, KeyType};
+
+#[derive(Debug)]
+pub struct Key {
+    master: bool,
+    key_type: KeyType,
+    expiry: Expiry,
+    private_key: Vec<u8>,
+    public_key: Vec<u8>,
+    signature: Option<Vec<u8>>,
+}
+
+impl Key {
+    pub fn generate(key_type: KeyType) -> Self {
+        let (private_key, public_key) = match key_type {
+            KeyType::Ed25519 => {
+                let private_key = cck_asymmetric::ed25519::gen_private_key();
+                let public_key = cck_asymmetric::ed25519::gen_public_key(&private_key);
+                (private_key.to_vec(), public_key.to_vec())
+            }
+
+            KeyType::X25519 => {
+                let private_key = cck_asymmetric::x25519::gen_private_key();
+                let public_key = cck_asymmetric::x25519::gen_public_key(&private_key);
+                (private_key.to_vec(), public_key.to_vec())
+            }
+        };
+
+        Self {
+            master: false,
+            key_type: key_type,
+            expiry: Expiry::default(),
+            private_key: private_key,
+            public_key: public_key,
+            signature: None,
+        }
+    }
+
+    pub fn derive_key(&self, key_type: KeyType) -> cck_common::Result<Key> {
+        let mut key = match key_type {
+            KeyType::Ed25519 => Self::generate(key_type),
+            KeyType::X25519 => Self::generate(key_type),
+        };
+
+        key.set_master(false).unwrap();
+
+        let signature = match self.key_type {
+            KeyType::Ed25519 => cck_asymmetric::ed25519::sign(
+                unsafe {
+                    self.private_key
+                        .get_unchecked(..SIZE_32)
+                        .try_into()
+                        .unwrap()
+                },
+                &key.public_key,
+            )?
+            .to_vec(),
+
+            _ => Err(cck_common::Error)?,
+        };
+
+        key.signature = Some(signature);
+
+        Ok(key)
+    }
+
+    pub fn set_expiry(&mut self, expiry: Expiry) -> &mut Self {
+        self.expiry = expiry;
+
+        self
+    }
+
+    pub fn set_master(&mut self, is_master: bool) -> cck_common::Result<&mut Self> {
+        if is_master && !matches!(self.key_type, KeyType::Ed25519) {
+            Err(cck_common::Error)?
+        }
+
+        self.master = is_master;
+        Ok(self)
+    }
+
+    pub fn is_master(&self) -> bool {
+        self.master
+    }
+
+    pub fn key_type(&self) -> &KeyType {
+        &self.key_type
+    }
+
+    pub fn expiry(&self) -> &Expiry {
+        &self.expiry
+    }
+
+    pub fn private_key(&self) -> &[u8] {
+        &self.private_key
+    }
+
+    pub fn public_key(&self) -> &[u8] {
+        &self.public_key
+    }
+
+    pub fn signature(&self) -> Option<&[u8]> {
+        Some(self.signature.as_ref()?)
+    }
+
+    pub fn fingerprint(&self) -> String {
+        let public_key = self.public_key.as_ref();
+
+        crate::fingerprint::blake3_digest(public_key)
+    }
+}
