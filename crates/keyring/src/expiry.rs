@@ -1,15 +1,35 @@
+
+/// Expiry date of a key.
+/// 
+/// The expiry date is represented as a tuple of 8 bytes.
+/// 
+/// All 0 means it is valid forever.
+/// 
+/// Default is all 0.
+/// 
+/// - *The first 4 bytes represent the year.*
+/// 
+/// - *The next 2 bytes represent the month.*
+/// 
+/// - *The last 2 bytes represent the day.*
+/// 
+/// This structure only represents the expiration date and does not provide any functionality such as actual activation or revocation.
 #[derive(Debug)]
 pub struct Expiry(u8, u8, u8, u8, u8, u8, u8, u8);
 
 impl Expiry {
+
+    /// Returns the expiry year of the key.
     pub fn year(&self) -> (u8, u8, u8, u8) {
         (self.0, self.1, self.2, self.3)
     }
 
+    /// Returns the expiry month of the key.
     pub fn month(&self) -> (u8, u8) {
         (self.4, self.5)
     }
 
+    /// Returns the expiry day of the key.
     pub fn day(&self) -> (u8, u8) {
         (self.6, self.7)
     }
