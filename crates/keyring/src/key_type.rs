@@ -7,7 +7,7 @@ use std::fmt::Display;
 /// - *X25519 is a type of key that is used for Diffie-Hellman key exchange (key agreement).*
 ///
 /// Only a signing key can be a Master Key.
-#[derive(Debug,PartialEq, Eq)]
+#[derive(Debug,Clone,PartialEq, Eq)]
 pub enum KeyType {
     Ed25519,
     X25519,
