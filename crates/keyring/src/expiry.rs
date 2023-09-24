@@ -14,7 +14,7 @@
 /// - *The last 2 bytes represent the day.*
 /// 
 /// This structure only represents the expiration date and does not provide any functionality such as actual activation or revocation.
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Expiry(u8, u8, u8, u8, u8, u8, u8, u8);
 
 impl Expiry {
