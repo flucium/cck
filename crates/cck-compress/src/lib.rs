@@ -1,5 +1,6 @@
 pub mod deflate;
 
+/// The compression level.
 #[repr(u32)]
 #[derive(Debug)]
 pub enum Level {
@@ -27,6 +28,10 @@ impl Into<u32> for Level {
 }
 
 impl core::default::Default for Level {
+
+    /// Returns the default compression level.
+    /// 
+    /// Default: `Level::Normal`
     fn default() -> Self {
         Self::Normal
     }
