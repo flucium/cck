@@ -19,6 +19,13 @@ pub struct Expiry(u8, u8, u8, u8, u8, u8, u8, u8);
 
 impl Expiry {
 
+    /// Creates a new Expiry.
+    /// 
+    /// Default is all 0.
+    pub const fn new() -> Self {
+        Self(0, 0, 0, 0, 0, 0, 0, 0)
+    }
+
     /// Returns the expiry year of the key.
     pub fn year(&self) -> (u8, u8, u8, u8) {
         (self.0, self.1, self.2, self.3)
