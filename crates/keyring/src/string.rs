@@ -83,12 +83,18 @@ pub fn decode<T: Key>(string: impl Into<String>) -> cck_common::Result<T> {
 
     let key = parse_key(lines.next().unwrap_or_default().to_string())?;
 
-    // ToDo!
-    parse_fingerprint(lines.next().unwrap_or_default().to_string())?;
+    let fingerprint = parse_fingerprint(lines.next().unwrap_or_default().to_string())?;
 
     let signature = parse_signature(lines.next().unwrap_or_default().to_string())?;
 
-    Ok(T::from(primary, key_type, expiry, key, signature))
+    Ok(T::from(
+        primary,
+        key_type,
+        expiry,
+        key,
+        fingerprint,
+        signature,
+    ))
 }
 
 fn parse_primary(string: String) -> cck_common::Result<bool> {
@@ -218,11 +224,11 @@ fn parse_key(string: String) -> cck_common::Result<Vec<u8>> {
     }
 }
 
-fn parse_fingerprint(string: String) -> cck_common::Result<()> {
+fn parse_fingerprint(string: String) -> cck_common::Result<String> {
     match string.is_empty() {
         true => Err(cck_common::Error)?,
         false => {
-            let (key, _) = match string.split_once(':') {
+            let (key, value) = match string.split_once(':') {
                 None => Err(cck_common::Error)?,
                 Some((key, value)) => (key, value),
             };
@@ -232,7 +238,7 @@ fn parse_fingerprint(string: String) -> cck_common::Result<()> {
             }
 
             // value
-            Ok(())
+            Ok(value.to_owned())
         }
     }
 }
