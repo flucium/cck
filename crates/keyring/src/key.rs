@@ -2,6 +2,7 @@ use cck_common::size::SIZE_32;
 use std::default::Default;
 
 use crate::{
+    fingerprint,
     string::{decode, encode},
     Expiry, KeyType,
 };
@@ -18,7 +19,7 @@ pub trait Key {
 
     fn signature(&self) -> Option<&[u8]>;
 
-    fn fingerprint(&self) -> String;
+    fn fingerprint(&self) -> &str;
 
     fn is_private_key(&self) -> bool;
 
@@ -27,6 +28,7 @@ pub trait Key {
         key_type: KeyType,
         expiry: Expiry,
         key: Vec<u8>,
+        fingerprint: String,
         signature: Option<Vec<u8>>,
     ) -> Self;
 
@@ -53,11 +55,11 @@ pub struct PublicKey {
     key_type: KeyType,
     expiry: Expiry,
     public_key: Vec<u8>,
+    fingerprint: String,
     signature: Option<Vec<u8>>,
 }
 
 impl Key for PublicKey {
-    
     /// Returns true if the key is primary
     fn is_primary(&self) -> bool {
         self.primary
@@ -74,19 +76,24 @@ impl Key for PublicKey {
     }
 
     /// Returns the raw public key bytes
-    /// 
+    ///
     /// Note that to_string returns in CCK Format, while as_bytes returns only public key bytes.
-    /// 
+    ///
     /// # Example
     /// ```
     /// let private_key = PrivateKey::generate(KeyType::Ed25519)
-    /// 
+    ///
     /// let public_key:PublicKey = private_key.public_key();
-    /// 
+    ///
     /// let bytes:&[u8] = public_key.as_bytes();
     /// ```
     fn as_bytes(&self) -> &[u8] {
         &self.public_key
+    }
+
+    /// Returns the fingerprint of the key
+    fn fingerprint(&self) -> &str {
+        &self.fingerprint
     }
 
     /// Returns the signature of the key
@@ -94,15 +101,8 @@ impl Key for PublicKey {
         Some(self.signature.as_ref()?)
     }
 
-    /// Returns the fingerprint of the key
-    fn fingerprint(&self) -> String {
-        let public_key = self.public_key.as_ref();
-
-        crate::fingerprint::blake3_digest(public_key)
-    }
-
     /// Returns true if the key is a private key
-    /// 
+    ///
     /// Note that this is a public key, so it returns false.
     fn is_private_key(&self) -> bool {
         false
@@ -119,6 +119,7 @@ impl Key for PublicKey {
         key_type: KeyType,
         expiry: Expiry,
         key: Vec<u8>,
+        fingerprint: String,
         signature: Option<Vec<u8>>,
     ) -> Self {
         Self {
@@ -126,6 +127,7 @@ impl Key for PublicKey {
             key_type: key_type,
             expiry: expiry,
             public_key: key,
+            fingerprint: fingerprint,
             signature: signature,
         }
     }
@@ -172,6 +174,7 @@ pub struct PrivateKey {
     pub(super) expiry: Expiry,
     pub(super) private_key: Vec<u8>,
     pub(super) public_key: Vec<u8>,
+    pub(super) fingerprint: String,
     pub(super) signature: Option<Vec<u8>>,
 }
 
@@ -205,16 +208,14 @@ impl Key for PrivateKey {
         &self.private_key
     }
 
+    /// Returns the fingerprint of the key
+    fn fingerprint(&self) -> &str {
+        &self.fingerprint
+    }
+
     /// Returns the signature of the key
     fn signature(&self) -> Option<&[u8]> {
         Some(self.signature.as_ref()?)
-    }
-
-    /// Returns the fingerprint of the key
-    fn fingerprint(&self) -> String {
-        let public_key = self.public_key.as_ref();
-
-        crate::fingerprint::blake3_digest(public_key)
     }
 
     /// Returns true if the key is a private key
@@ -233,6 +234,7 @@ impl Key for PrivateKey {
         key_type: KeyType,
         expiry: Expiry,
         key: Vec<u8>,
+        fingerprint: String,
         signature: Option<Vec<u8>>,
     ) -> Self {
         let public_key = match key_type {
@@ -252,6 +254,7 @@ impl Key for PrivateKey {
             expiry: expiry,
             private_key: key,
             public_key: public_key,
+            fingerprint: fingerprint,
             signature: signature,
         }
     }
@@ -279,12 +282,15 @@ impl PrivateKey {
             }
         };
 
+        let fingerprint = fingerprint::blake3_digest(&public_key);
+
         Self {
             primary: false,
             key_type: key_type,
             expiry: Expiry::default(),
             private_key: private_key,
             public_key: public_key,
+            fingerprint: fingerprint,
             signature: None,
         }
     }
@@ -378,6 +384,7 @@ impl PrivateKey {
             key_type: self.key_type.clone(),
             expiry: self.expiry.clone(),
             public_key: self.public_key.clone(),
+            fingerprint: self.fingerprint.clone(),
             signature: self.signature.clone(),
         }
     }
