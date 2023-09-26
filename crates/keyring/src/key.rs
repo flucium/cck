@@ -15,7 +15,7 @@ pub trait Key {
 
     fn expiry(&self) -> &Expiry;
 
-    fn as_bytes(&self) -> &[u8];
+    fn raw_key_bytes(&self) -> &[u8];
 
     fn signature(&self) -> Option<&[u8]>;
 
@@ -77,7 +77,7 @@ impl Key for PublicKey {
 
     /// Returns the raw public key bytes
     ///
-    /// Note that to_string returns in CCK Format, while as_bytes returns only public key bytes.
+    /// Note that to_string returns in CCK Format, while raw_key_bytes returns only public key bytes.
     ///
     /// # Example
     /// ```
@@ -85,9 +85,9 @@ impl Key for PublicKey {
     ///
     /// let public_key:PublicKey = private_key.public_key();
     ///
-    /// let bytes:&[u8] = public_key.as_bytes();
+    /// let bytes:&[u8] = public_key.raw_key_bytes();
     /// ```
-    fn as_bytes(&self) -> &[u8] {
+    fn raw_key_bytes(&self) -> &[u8] {
         &self.public_key
     }
 
@@ -196,15 +196,15 @@ impl Key for PrivateKey {
 
     /// Returns the raw private key bytes
     ///
-    /// Note that to_string returns in CCK Format, while as_bytes returns only private key bytes.
+    /// Note that to_string returns in CCK Format, while raw_key_bytes returns only private key bytes.
     ///
     /// # Example
     /// ```
     /// let private_key = PrivateKey::generate(KeyType::Ed25519)
     ///
-    /// let bytes:&[u8] = private_key.as_bytes();
+    /// let bytes:&[u8] = private_key.raw_key_bytes();
     /// ```
-    fn as_bytes(&self) -> &[u8] {
+    fn raw_key_bytes(&self) -> &[u8] {
         &self.private_key
     }
 

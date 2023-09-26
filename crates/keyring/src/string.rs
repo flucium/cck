@@ -31,12 +31,12 @@ pub fn encode(key: &impl Key) -> String {
     let k = if key.is_private_key() {
         format!(
             "PrivateKey:{}\n",
-            cck_format::base64ct::encode(key.as_bytes(), &mut [0u8; SIZE_64]).unwrap()
+            cck_format::base64ct::encode(key.raw_key_bytes(), &mut [0u8; SIZE_64]).unwrap()
         )
     } else {
         format!(
             "PublicKey:{}\n",
-            cck_format::base64ct::encode(key.as_bytes(), &mut [0u8; SIZE_64]).unwrap()
+            cck_format::base64ct::encode(key.raw_key_bytes(), &mut [0u8; SIZE_64]).unwrap()
         )
     };
 
