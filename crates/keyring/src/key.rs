@@ -17,9 +17,9 @@ pub trait Key {
 
     fn raw_key_bytes(&self) -> &[u8];
 
-    fn signature(&self) -> Option<&str>;
-
     fn fingerprint(&self) -> &str;
+
+    fn signature(&self) -> Option<&str>;
 
     fn is_private_key(&self) -> bool;
 
@@ -343,6 +343,7 @@ impl PrivateKey {
     /// let derived_key = private_key.derive_key(KeyType::X25519);
     /// ```
     pub fn derive_key(&self, key_type: KeyType) -> cck_common::Result<PrivateKey> {
+        // Self Generate.
         let mut private_key = match key_type {
             KeyType::Ed25519 => Self::generate(key_type),
             KeyType::X25519 => Self::generate(key_type),
@@ -365,8 +366,10 @@ impl PrivateKey {
             _ => Err(cck_common::Error)?,
         };
 
+        // private_key.signature =
+        //     Some(cck_format::base64ct::encode(&signature, &mut [0u8; SIZE_64])?.to_owned());
         private_key.signature =
-            Some(cck_format::base64ct::encode(&signature, &mut [0u8; SIZE_64])?.to_owned());
+            Some(cck_format::hex::encode(&signature, &mut [0u8; SIZE_64]).to_string());
 
         Ok(private_key)
     }
