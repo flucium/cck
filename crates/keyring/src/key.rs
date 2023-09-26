@@ -1,4 +1,4 @@
-use cck_common::size::SIZE_32;
+use cck_common::size::{SIZE_32, SIZE_64};
 use std::default::Default;
 
 use crate::{
@@ -17,7 +17,7 @@ pub trait Key {
 
     fn raw_key_bytes(&self) -> &[u8];
 
-    fn signature(&self) -> Option<&[u8]>;
+    fn signature(&self) -> Option<&str>;
 
     fn fingerprint(&self) -> &str;
 
@@ -29,7 +29,7 @@ pub trait Key {
         expiry: Expiry,
         key: Vec<u8>,
         fingerprint: String,
-        signature: Option<Vec<u8>>,
+        signature: Option<impl Into<String>>,
     ) -> Self;
 
     /// Convert the key to string
@@ -56,7 +56,7 @@ pub struct PublicKey {
     expiry: Expiry,
     public_key: Vec<u8>,
     fingerprint: String,
-    signature: Option<Vec<u8>>,
+    signature: Option<String>,
 }
 
 impl Key for PublicKey {
@@ -97,7 +97,7 @@ impl Key for PublicKey {
     }
 
     /// Returns the signature of the key
-    fn signature(&self) -> Option<&[u8]> {
+    fn signature(&self) -> Option<&str> {
         Some(self.signature.as_ref()?)
     }
 
@@ -120,7 +120,7 @@ impl Key for PublicKey {
         expiry: Expiry,
         key: Vec<u8>,
         fingerprint: String,
-        signature: Option<Vec<u8>>,
+        signature: Option<impl Into<String>>,
     ) -> Self {
         Self {
             primary: primary,
@@ -128,7 +128,7 @@ impl Key for PublicKey {
             expiry: expiry,
             public_key: key,
             fingerprint: fingerprint,
-            signature: signature,
+            signature: signature.map(|signature| signature.into()),
         }
     }
 }
@@ -175,7 +175,7 @@ pub struct PrivateKey {
     pub(super) private_key: Vec<u8>,
     pub(super) public_key: Vec<u8>,
     pub(super) fingerprint: String,
-    pub(super) signature: Option<Vec<u8>>,
+    pub(super) signature: Option<String>,
 }
 
 impl Key for PrivateKey {
@@ -214,7 +214,7 @@ impl Key for PrivateKey {
     }
 
     /// Returns the signature of the key
-    fn signature(&self) -> Option<&[u8]> {
+    fn signature(&self) -> Option<&str> {
         Some(self.signature.as_ref()?)
     }
 
@@ -235,7 +235,7 @@ impl Key for PrivateKey {
         expiry: Expiry,
         key: Vec<u8>,
         fingerprint: String,
-        signature: Option<Vec<u8>>,
+        signature: Option<impl Into<String>>,
     ) -> Self {
         let public_key = match key_type {
             KeyType::Ed25519 => cck_asymmetric::ed25519::gen_public_key(unsafe {
@@ -255,7 +255,7 @@ impl Key for PrivateKey {
             private_key: key,
             public_key: public_key,
             fingerprint: fingerprint,
-            signature: signature,
+            signature: signature.map(|signature| signature.into()),
         }
     }
 }
@@ -365,7 +365,8 @@ impl PrivateKey {
             _ => Err(cck_common::Error)?,
         };
 
-        private_key.signature = Some(signature);
+        private_key.signature =
+            Some(cck_format::base64ct::encode(&signature, &mut [0u8; SIZE_64])?.to_owned());
 
         Ok(private_key)
     }

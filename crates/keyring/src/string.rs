@@ -45,7 +45,7 @@ pub fn encode(key: &impl Key) -> String {
     let signature = match key.signature() {
         Some(signature) => format!(
             "Signature:{}\n",
-            cck_format::base64ct::encode(signature, &mut [0u8; SIZE_64]).unwrap()
+            signature
         ),
         None => String::from_str("Signature:None").unwrap(),
     };
@@ -243,7 +243,7 @@ fn parse_fingerprint(string: String) -> cck_common::Result<String> {
     }
 }
 
-fn parse_signature(string: String) -> cck_common::Result<Option<Vec<u8>>> {
+fn parse_signature(string: String) -> cck_common::Result<Option<String>> {
     match string.is_empty() {
         true => Ok(None),
         false => {
@@ -263,7 +263,7 @@ fn parse_signature(string: String) -> cck_common::Result<Option<Vec<u8>>> {
                 Ok(None)
             } else {
                 Ok(Some(
-                    cck_format::base64ct::decode(value, &mut [0u8; SIZE_64])?.to_vec(),
+                    value.to_string(),
                 ))
             }
         }
