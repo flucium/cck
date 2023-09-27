@@ -51,12 +51,12 @@ pub trait Key {
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PublicKey {
-    primary: bool,
-    key_type: KeyType,
-    expiry: Expiry,
-    public_key: Vec<u8>,
-    fingerprint: String,
-    signature: Option<String>,
+    pub(super) primary: bool,
+    pub(super) key_type: KeyType,
+    pub(super) expiry: Expiry,
+    pub(super) public_key: Vec<u8>,
+    pub(super) fingerprint: String,
+    pub(super) signature: Option<String>,
 }
 
 impl Key for PublicKey {
