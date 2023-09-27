@@ -1,13 +1,13 @@
 use std::fmt::Display;
 
 /// KeyType is an enum that represents the type of key.
-/// 
+///
 /// - *Ed25519 is a type of key that is used for signing and verifying.*
-/// 
+///
 /// - *X25519 is a type of key that is used for Diffie-Hellman key exchange (key agreement).*
 ///
 /// Only a signing key can be a Master Key.
-#[derive(Debug,Clone,PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum KeyType {
     Ed25519,
     X25519,
@@ -41,5 +41,40 @@ impl Display for KeyType {
             Self::Ed25519 => f.write_str("Ed25519"),
             Self::X25519 => f.write_str("X25519"),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn key_type_default() {
+        let key_type = KeyType::default();
+
+        assert_eq!(key_type, KeyType::Ed25519);
+    }
+
+    #[test]
+    fn key_type_ed25519() {
+        let key_type = KeyType::Ed25519;
+
+        assert_eq!(key_type, KeyType::Ed25519);
+    }
+
+    #[test]
+    fn key_type_x25519() {
+        let key_type = KeyType::X25519;
+
+        assert_eq!(key_type, KeyType::X25519);
+    }
+
+    #[test]
+    fn key_type_to_string() {
+        assert_eq!(KeyType::default().to_string(), "Ed25519");
+
+        assert_eq!(KeyType::Ed25519.to_string(), "Ed25519");
+
+        assert_eq!(KeyType::X25519.to_string(), "X25519");
     }
 }
