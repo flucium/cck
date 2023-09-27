@@ -1,26 +1,24 @@
-
 /// Expiry date of a key.
-/// 
+///
 /// The expiry date is represented as a tuple of 8 bytes.
-/// 
+///
 /// All 0 means it is valid forever.
-/// 
+///
 /// Default is all 0.
-/// 
+///
 /// - *The first 4 bytes represent the year.*
-/// 
+///
 /// - *The next 2 bytes represent the month.*
-/// 
+///
 /// - *The last 2 bytes represent the day.*
-/// 
+///
 /// This structure only represents the expiration date and does not provide any functionality such as actual activation or revocation.
-#[derive(Debug,Clone,PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Expiry(u8, u8, u8, u8, u8, u8, u8, u8);
 
 impl Expiry {
-
     /// Creates a new Expiry.
-    /// 
+    ///
     /// Default is all 0.
     pub const fn new() -> Self {
         Self(0, 0, 0, 0, 0, 0, 0, 0)
@@ -74,3 +72,41 @@ impl ToString for Expiry {
 //         ))
 //     }
 // }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn expiry_default() {
+        let expiry = Expiry::default();
+
+        assert_eq!(expiry.year(), (0, 0, 0, 0));
+
+        assert_eq!(expiry.month(), (0, 0));
+
+        assert_eq!(expiry.day(), (0, 0));
+    }
+
+    #[test]
+    fn expiry_from_pattern1() {
+        let expiry = Expiry::from((2, 0, 2, 3, 1, 2, 3, 1));
+
+        assert_eq!(expiry.year(), (2, 0, 2, 3));
+
+        assert_eq!(expiry.month(), (1, 2));
+
+        assert_eq!(expiry.day(), (3, 1));
+    }
+
+    #[test]
+    fn expiry_from_pattern2() {
+        let expiry = Expiry::from((2, 0, 2, 3, 0, 2, 0, 1));
+
+        assert_eq!(expiry.year(), (2, 0, 2, 3));
+
+        assert_eq!(expiry.month(), (0, 2));
+
+        assert_eq!(expiry.day(), (0, 1));
+    }
+}
