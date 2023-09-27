@@ -43,10 +43,7 @@ pub fn encode(key: &impl Key) -> String {
     let fingerprint = format!("Fingerprint:{}\n", key.fingerprint());
 
     let signature = match key.signature() {
-        Some(signature) => format!(
-            "Signature:{}\n",
-            signature
-        ),
+        Some(signature) => format!("Signature:{}\n", signature),
         None => String::from_str("Signature:None").unwrap(),
     };
 
@@ -262,10 +259,27 @@ fn parse_signature(string: String) -> cck_common::Result<Option<String>> {
             } else if value == "None" {
                 Ok(None)
             } else {
-                Ok(Some(
-                    value.to_string(),
-                ))
+                Ok(Some(value.to_string()))
             }
         }
+    }
+}
+
+#[cfg(test)]
+pub mod tests {
+
+    use crate::*;
+    use key_type;
+
+    #[test]
+    fn parsing() {
+        let private_key = PrivateKey::generate(key_type::KeyType::Ed25519);
+
+        let priavte_key_string = private_key.to_string();
+
+        assert_eq!(
+            private_key,
+            PrivateKey::from_string(priavte_key_string).unwrap()
+        );
     }
 }
