@@ -15,7 +15,7 @@ pub trait Key {
 
     fn expiry(&self) -> &Expiry;
 
-    fn raw_key_bytes(&self) -> &[u8];
+    fn key(&self) -> &[u8];
 
     fn fingerprint(&self) -> &str;
 
@@ -75,19 +75,8 @@ impl Key for PublicKey {
         &self.expiry
     }
 
-    /// Returns the raw public key bytes
-    ///
-    /// Note that to_string returns in CCK Format, while raw_key_bytes returns only public key bytes.
-    ///
-    /// # Example
-    /// ```
-    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
-    ///
-    /// let public_key:PublicKey = private_key.public_key();
-    ///
-    /// let bytes:&[u8] = public_key.raw_key_bytes();
-    /// ```
-    fn raw_key_bytes(&self) -> &[u8] {
+    /// Returns the raw key bytes
+    fn key(&self) -> &[u8] {
         &self.public_key
     }
 
@@ -194,20 +183,11 @@ impl Key for PrivateKey {
         &self.expiry
     }
 
-    /// Returns the raw private key bytes
-    ///
-    /// Note that to_string returns in CCK Format, while raw_key_bytes returns only private key bytes.
-    ///
-    /// # Example
-    /// ```
-    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
-    ///
-    /// let bytes:&[u8] = private_key.raw_key_bytes();
-    /// ```
-    fn raw_key_bytes(&self) -> &[u8] {
+    /// Returns the raw key bytes
+    fn key(&self) -> &[u8] {
         &self.private_key
     }
-    
+
     /// Returns the fingerprint of the key
     fn fingerprint(&self) -> &str {
         &self.fingerprint
