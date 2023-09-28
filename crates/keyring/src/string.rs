@@ -151,54 +151,7 @@ fn parse_expiry(string: String) -> cck_common::Result<Expiry> {
                 Err(cck_common::Error)?
             }
 
-            let value = value.split('/').collect::<Vec<&str>>();
-
-            if value.len() != 3 {
-                Err(cck_common::Error)?
-            }
-
-            if !value[0].parse::<usize>().unwrap() <= 9999 {
-                Err(cck_common::Error)?
-            }
-
-            if !value[1].parse::<usize>().unwrap() <= 12 {
-                Err(cck_common::Error)?
-            }
-
-            if !value[2].parse::<usize>().unwrap() <= 31 {
-                Err(cck_common::Error)?
-            }
-
-            let year = value[0]
-                .chars()
-                .map(|ch| ch.to_digit(10))
-                .collect::<Option<Vec<_>>>()
-                .unwrap();
-
-            let month = value[1]
-                .chars()
-                .map(|ch| ch.to_digit(10))
-                .collect::<Option<Vec<_>>>()
-                .unwrap();
-
-            let day = value[2]
-                .chars()
-                .map(|ch| ch.to_digit(10))
-                .collect::<Option<Vec<_>>>()
-                .unwrap();
-
-            let date = (
-                year[0] as u8,
-                year[1] as u8,
-                year[2] as u8,
-                year[3] as u8,
-                month[0] as u8,
-                month[1] as u8,
-                day[0] as u8,
-                day[1] as u8,
-            );
-
-            Ok(Expiry::from(date))
+            Ok(Expiry::from_string(value.to_owned())?)
         }
     }
 }
