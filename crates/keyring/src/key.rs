@@ -4,7 +4,7 @@ use std::default::Default;
 use crate::{
     fingerprint,
     string::{decode, encode},
-    Expiry, KeyType,
+    Expiry, KeyType, model,
 };
 
 /// Key trait for public and private keys
@@ -160,6 +160,8 @@ impl ToString for PublicKey {
         encode(self)
     }
 }
+
+impl model::Model for PublicKey {}
 
 /// PrivateKey
 ///
@@ -421,6 +423,8 @@ impl ToString for PrivateKey {
         encode(self)
     }
 }
+
+impl model::Model for PrivateKey {}
 
 #[cfg(test)]
 mod tests {
