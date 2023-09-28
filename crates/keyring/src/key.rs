@@ -17,8 +17,6 @@ pub trait Key {
 
     fn raw_key_bytes(&self) -> &[u8];
 
-    fn raw_key_string(&self) -> String;
-
     fn fingerprint(&self) -> &str;
 
     fn signature(&self) -> Option<&str>;
@@ -91,23 +89,6 @@ impl Key for PublicKey {
     /// ```
     fn raw_key_bytes(&self) -> &[u8] {
         &self.public_key
-    }
-
-    /// Returns the raw public key string (base64 encoded raw key bytes)
-    ///
-    /// # Example
-    /// ```
-    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
-    ///
-    /// let public_key:PublicKey = private_key.public_key();
-    ///
-    /// // string: base64 string.
-    /// let string:&str = public_key.raw_key_string();
-    /// ```
-    fn raw_key_string(&self) -> String {
-        cck_format::base64ct::encode(&self.public_key, &mut [0u8; SIZE_64])
-            .unwrap()
-            .to_string()
     }
 
     /// Returns the fingerprint of the key
@@ -226,19 +207,7 @@ impl Key for PrivateKey {
     fn raw_key_bytes(&self) -> &[u8] {
         &self.private_key
     }
-
-    /// Returns the raw private key string (base64 encoded raw key bytes)
-    ///
-    /// # Example
-    /// ```
-    ///
-    /// ```
-    fn raw_key_string(&self) -> String {
-        cck_format::base64ct::encode(&self.private_key, &mut [0u8; SIZE_64])
-            .unwrap()
-            .to_string()
-    }
-
+    
     /// Returns the fingerprint of the key
     fn fingerprint(&self) -> &str {
         &self.fingerprint
