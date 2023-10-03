@@ -7,10 +7,17 @@ edition = "2021"
 
 [dependencies]
 
+#https://github.com/rust-lang/regex
+regex = "1.9.5"
+
+#https://github.com/rusqlite/rusqlite
+rusqlite = "0.29.0"
+
 #Internal
 cck-common={path="../cck-common",version="0.0.1"}
 cck-asymmetric={path="../cck-asymmetric",version="0.0.1"}
 cck-hash={path="../cck-hash",version="0.0.1"}
+cck-rand={path="../cck-rand",version="0.0.1"}
 cck-format={path="../cck-format",version="0.0.1"}
 
 [features]
