@@ -15,7 +15,7 @@ pub trait Key {
 
     fn expiry(&self) -> &Expiry;
 
-    fn key(&self) -> &[u8];
+    fn as_bytes(&self) -> &[u8];
 
     fn fingerprint(&self) -> &str;
 
@@ -76,7 +76,7 @@ impl Key for PublicKey {
     }
 
     /// Returns the raw key bytes
-    fn key(&self) -> &[u8] {
+    fn as_bytes(&self) -> &[u8] {
         &self.public_key
     }
 
@@ -184,7 +184,7 @@ impl Key for PrivateKey {
     }
 
     /// Returns the raw key bytes
-    fn key(&self) -> &[u8] {
+    fn as_bytes(&self) -> &[u8] {
         &self.private_key
     }
 
