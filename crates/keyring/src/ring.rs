@@ -2,9 +2,10 @@ use std::path::Path;
 
 use rusqlite as sqlite;
 
-use crate::{sql,User};
-
-// use crate::{sql, Key, PrivateKey, PublicKey, User};
+use crate::{
+    sql::{self, SQL_INSERT_INTO_PRIVATE_KEYS},
+    Key, PrivateKey, User, PublicKey,
+};
 
 pub struct RingBuilder(Ring);
 
@@ -68,7 +69,53 @@ impl Ring {
         Ok(())
     }
 
-    
+    fn insert_private_key(
+        &mut self,
+        user: impl Into<User>,
+        private_key: impl Into<PrivateKey>,
+    ) -> cck_common::Result<()> {
+        let user = user.into();
+        let private_key = private_key.into();
+        self.0
+            .execute(
+                SQL_INSERT_INTO_PRIVATE_KEYS,
+                sqlite::params![
+                    user.id(),
+                    private_key.key_type().to_string(),
+                    private_key.expiry().to_string(),
+                    private_key.as_bytes(),
+                    private_key.fingerprint(),
+                    private_key.signature()
+                ],
+            )
+            .map_err(|_| cck_common::Error)?;
+
+        Ok(())
+    }
+
+    fn insert_public_key(
+        &mut self,
+        user: impl Into<User>,
+        public_key: impl Into<PublicKey>,
+    ) -> cck_common::Result<()> {
+        let user = user.into();
+        let public_key = public_key.into();
+        self.0
+            .execute(
+                SQL_INSERT_INTO_PRIVATE_KEYS,
+                sqlite::params![
+                    user.id(),
+                    public_key.key_type().to_string(),
+                    public_key.expiry().to_string(),
+                    public_key.as_bytes(),
+                    public_key.fingerprint(),
+                    public_key.signature()
+                ],
+            )
+            .map_err(|_| cck_common::Error)?;
+
+        Ok(())
+    }
 }
 
 fn init_tables(conn: &mut sqlite::Connection) -> cck_common::Result<()> {
