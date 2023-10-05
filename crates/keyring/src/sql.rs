@@ -10,7 +10,7 @@ pub const SQL_CREATE_TABLE_USERS: &str =
 pub const SQL_DROP_TABLE_USERS: &str = "DROP TABLE users;";
 
 /// Insert a new user into the table users
-pub const SQL_INSERT_INTO_USERS: &str = "INSERT INTO users (id, name, email) VALUES(?, ?, ?);";
+pub const SQL_INSERT_INTO_USERS: &str = "INSERT INTO users (id TEXT, name TEXT, email TEXT) VALUES(?, ?, ?);";
 
 /// Select all users from the table users
 ///
@@ -37,13 +37,13 @@ SQL statements for the database
 Table: private_keys
 */
 /// Create the table private_keys if it does not exist
-pub const SQL_CREATE_TABLE_PRIVATE_KEYS: &str = "CREATE TABLE IF NOT EXISTS private_keys (user_id TEXT, primary_key boolean, key_type TEXT, expiry TEXT, private_key TEXT, fingerprint TEXT, signature TEXT);";
+pub const SQL_CREATE_TABLE_PRIVATE_KEYS: &str = "CREATE TABLE IF NOT EXISTS private_keys (user_id TEXT, primary boolean, key_type TEXT, expiry TEXT, private_key BLOB, fingerprint TEXT, signature TEXT);";
 
 /// Drop the table private_keys
 pub const SQL_DROP_TABLE_PRIVATE_KEYS: &str = "DROP TABLE private_keys;";
 
 /// Insert a new private key into the table private_keys
-pub const SQL_INSERT_INTO_PRIVATE_KEYS: &str = "INSERT INTO private_keys (user_id, primary_key, key_type, expiry, private_key, fingerprint, signature) VALUES(?, ?, ?, ?, ?, ?, ?);";
+pub const SQL_INSERT_INTO_PRIVATE_KEYS: &str = "INSERT INTO private_keys (user_id TEXT, primary boolean, key_type TEXT, expiry TEXT, private_key BLOB, fingerprint TEXT, signature TEXT) VALUES(?, ?, ?, ?, ?, ?, ?);";
 
 /// Select all private keys from the table private_keys
 pub const SQL_SELECT_FROM_PRIVATE_KEYS: &str = "SELECT * FROM private_keys;";
@@ -65,13 +65,13 @@ SQL statements for the database
 Table: public_keys
 */
 /// Create the table public_keys if it does not exist
-pub const SQL_CREATE_TABLE_PUBLIC_KEYS: &str = "CREATE TABLE IF NOT EXISTS public_keys (user_id TEXT, primary_key boolean, key_type TEXT, expiry TEXT, public_key TEXT, fingerprint TEXT, signature TEXT);";
+pub const SQL_CREATE_TABLE_PUBLIC_KEYS: &str = "CREATE TABLE IF NOT EXISTS public_keys (user_id TEXT, primary boolean, key_type TEXT, expiry TEXT, public_key BLOB, fingerprint TEXT, signature TEXT);";
 
 /// Drop the table public_keys
 pub const SQL_DROP_TABLE_PUBLIC_KEYS: &str = "DROP TABLE public_keys;";
 
 /// Insert a new public key into the table public_keys
-pub const SQL_INSERT_INTO_PUBLIC_KEYS: &str = "INSERT INTO public_keys (user_id, primary_key, key_type, expiry, public_key, fingerprint, signature) VALUES(?, ?, ?, ?, ?, ?, ?);";
+pub const SQL_INSERT_INTO_PUBLIC_KEYS: &str = "INSERT INTO public_keys (user_id TEXT, primary boolean, key_type TEXT, expiry TEXT, public_key BLOB, fingerprint TEXT, signature TEXT) VALUES(?, ?, ?, ?, ?, ?, ?);";
 
 /// Select all public keys from the table public_keys
 ///
