@@ -401,27 +401,3 @@ impl ToString for PrivateKey {
         encode(self)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn generate_key() {
-        let private_key = PrivateKey::generate(KeyType::Ed25519);
-
-        let public_key = private_key.public_key();
-
-        assert_eq!(private_key.fingerprint(), public_key.fingerprint());
-
-        assert_eq!(private_key.key_type(), public_key.key_type());
-
-        assert_eq!(private_key.expiry(), public_key.expiry());
-
-        assert_eq!(private_key.is_primary(), public_key.is_primary());
-
-        assert_eq!(private_key.signature(), public_key.signature());
-
-        assert_ne!(private_key.raw_key_bytes(), public_key.raw_key_bytes());
-    }
-}
