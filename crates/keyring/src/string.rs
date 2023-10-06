@@ -228,6 +228,7 @@ fn parse_signature(string: String) -> cck_common::Result<Option<Vec<u8>>> {
 
 #[cfg(test)]
 mod tests {
+    use crate::Key;
 
     #[test]
     fn encode_private_key() {
@@ -259,5 +260,77 @@ mod tests {
         let decoded_public_key = decode(string).unwrap();
 
         assert_eq!(public_key, decoded_public_key);
+    }
+
+    #[test]
+    fn parse_primary() {
+        use super::parse_primary;
+
+        let string = String::from("Primary:true");
+
+        let primary = parse_primary(string).unwrap();
+
+        assert_eq!(primary, true);
+
+        let string = String::from("Primary:false");
+
+        let primary = parse_primary(string).unwrap();
+
+        assert_eq!(primary, false);
+    }
+
+    #[test]
+    fn parse_key_type() {
+        use super::parse_key_type;
+
+        let string = String::from("KeyType:Ed25519");
+
+        let key_type = parse_key_type(string).unwrap();
+
+        assert_eq!(key_type, crate::KeyType::Ed25519);
+    }
+
+    #[test]
+    fn parse_expiry() {
+        use super::parse_expiry;
+
+        let string = String::from("Expiry:2023/01/01");
+
+        let expiry = parse_expiry(string).unwrap();
+
+        assert_eq!(expiry, crate::Expiry::from_string("2023/01/01").unwrap());
+    }
+
+    #[test]
+    fn parse_signature() {
+        use super::parse_signature;
+
+        let string = String::from("Signature:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=");
+
+        let signature = parse_signature(string).unwrap();
+
+        assert_eq!(signature, Some(vec![0u8; 64]));
+    }
+
+    #[test]
+    fn parse_signature_none() {
+        use super::parse_signature;
+
+        let string = String::from("Signature:None");
+
+        let signature = parse_signature(string).unwrap();
+
+        assert_eq!(signature, None);
+    }
+
+    #[test]
+    fn parse_fingerprint() {
+        use super::parse_fingerprint;
+
+        let string = String::from("Fingerprint:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=");
+
+        let fingerprint = parse_fingerprint(string).unwrap();
+
+        assert_eq!(fingerprint, b"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=");
     }
 }
