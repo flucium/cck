@@ -40,7 +40,10 @@ pub fn encode(key: &impl Key) -> String {
         )
     };
 
-    let fingerprint = format!("Fingerprint:{}\n", key.fingerprint());
+    let fingerprint = format!(
+        "Fingerprint:{}\n",
+        cck_format::base64ct::encode(key.fingerprint(), &mut [0u8; SIZE_64]).unwrap()
+    );
 
     let signature = match key.signature() {
         Some(signature) => format!(
@@ -177,7 +180,7 @@ fn parse_key(string: String) -> cck_common::Result<Vec<u8>> {
     }
 }
 
-fn parse_fingerprint(string: String) -> cck_common::Result<String> {
+fn parse_fingerprint(string: String) -> cck_common::Result<Vec<u8>> {
     match string.is_empty() {
         true => Err(cck_common::Error)?,
         false => {
@@ -191,7 +194,7 @@ fn parse_fingerprint(string: String) -> cck_common::Result<String> {
             }
 
             // value
-            Ok(value.to_owned())
+            Ok(cck_format::base64ct::decode(value, &mut [0u8; SIZE_64])?.to_vec())
         }
     }
 }
@@ -242,7 +245,7 @@ mod tests {
     }
 
     #[test]
-    fn encode_public_key(){
+    fn encode_public_key() {
         use crate::{Key, KeyType, PrivateKey, PublicKey};
 
         use super::{decode, encode};

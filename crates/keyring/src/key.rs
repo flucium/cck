@@ -17,7 +17,7 @@ pub trait Key {
 
     fn as_bytes(&self) -> &[u8];
 
-    fn fingerprint(&self) -> &str;
+    fn fingerprint(&self) -> &[u8];
 
     fn signature(&self) -> Option<&[u8]>;
 
@@ -28,7 +28,7 @@ pub trait Key {
         key_type: KeyType,
         expiry: Expiry,
         key: Vec<u8>,
-        fingerprint: String,
+        fingerprint: Vec<u8>,
         signature: Option<Vec<u8>>,
     ) -> Self;
 
@@ -55,7 +55,7 @@ pub struct PublicKey {
     pub(super) key_type: KeyType,
     pub(super) expiry: Expiry,
     pub(super) public_key: Vec<u8>,
-    pub(super) fingerprint: String,
+    pub(super) fingerprint: Vec<u8>,
     pub(super) signature: Option<Vec<u8>>,
 }
 
@@ -81,7 +81,7 @@ impl Key for PublicKey {
     }
 
     /// Returns the fingerprint of the key
-    fn fingerprint(&self) -> &str {
+    fn fingerprint(&self) -> &[u8] {
         &self.fingerprint
     }
 
@@ -108,7 +108,7 @@ impl Key for PublicKey {
         key_type: KeyType,
         expiry: Expiry,
         key: Vec<u8>,
-        fingerprint: String,
+        fingerprint: Vec<u8>,
         signature: Option<Vec<u8>>,
     ) -> Self {
         Self {
@@ -163,7 +163,7 @@ pub struct PrivateKey {
     pub(super) expiry: Expiry,
     pub(super) private_key: Vec<u8>,
     pub(super) public_key: Vec<u8>,
-    pub(super) fingerprint: String,
+    pub(super) fingerprint: Vec<u8>,
     pub(super) signature: Option<Vec<u8>>,
 }
 
@@ -189,7 +189,7 @@ impl Key for PrivateKey {
     }
 
     /// Returns the fingerprint of the key
-    fn fingerprint(&self) -> &str {
+    fn fingerprint(&self) -> &[u8] {
         &self.fingerprint
     }
 
@@ -214,7 +214,7 @@ impl Key for PrivateKey {
         key_type: KeyType,
         expiry: Expiry,
         key: Vec<u8>,
-        fingerprint: String,
+        fingerprint: Vec<u8>,
         signature: Option<Vec<u8>>,
     ) -> Self {
         let public_key = match key_type {
@@ -434,5 +434,33 @@ mod tests {
         assert_eq!(public_key.public_key.len(), 32);
         assert_eq!(public_key.fingerprint.len(), 64);
         assert_eq!(public_key.signature.is_some(), false);
+    }
+
+    #[test]
+    fn generate_private_key_set_primary() {
+        use super::PrivateKey;
+        use crate::KeyType;
+
+        let mut private_key = PrivateKey::generate(KeyType::Ed25519);
+
+        assert_eq!(private_key.primary, false);
+
+        private_key.set_primary(true).unwrap();
+
+        assert_eq!(private_key.primary, true);
+    }
+
+    #[test]
+    fn is_match_fingerprint() {
+        use super::{PrivateKey,Key};
+        use crate::KeyType;
+
+        let private_key = PrivateKey::generate(KeyType::Ed25519);
+        let public_key = private_key.public_key();
+
+        assert_eq!(
+            private_key.fingerprint(),
+            public_key.fingerprint()
+        );
     }
 }
