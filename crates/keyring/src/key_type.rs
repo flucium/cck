@@ -18,9 +18,9 @@ impl KeyType {
         let string = string.into();
 
         match string {
-            string if string.eq_ignore_ascii_case("Ed25519") => return Ok(Self::Ed25519),
-            string if string.eq_ignore_ascii_case("X25519") => return Ok(Self::X25519),
-            _ => return Err(cck_common::Error),
+            string if string.eq_ignore_ascii_case("Ed25519") => Ok(Self::Ed25519),
+            string if string.eq_ignore_ascii_case("X25519") => Ok(Self::X25519),
+            _ => Err(cck_common::Error),
         }
     }
 
