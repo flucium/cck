@@ -127,10 +127,10 @@ impl ToString for Expiry {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
+    
     #[test]
     fn expiry_default() {
+        use super::Expiry;
         let expiry = Expiry::default();
 
         assert_eq!(expiry.year(), (0, 0, 0, 0));
@@ -142,6 +142,7 @@ mod tests {
 
     #[test]
     fn expiry_from_pattern1() {
+        use super::Expiry;
         let expiry = Expiry::from((2, 0, 2, 3, 1, 2, 3, 1));
 
         assert_eq!(expiry.year(), (2, 0, 2, 3));
@@ -153,6 +154,7 @@ mod tests {
 
     #[test]
     fn expiry_from_pattern2() {
+        use super::Expiry;
         let expiry = Expiry::from((2, 0, 2, 3, 0, 2, 0, 1));
 
         assert_eq!(expiry.year(), (2, 0, 2, 3));
