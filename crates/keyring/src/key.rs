@@ -1,4 +1,4 @@
-use cck_common::size::{SIZE_32, SIZE_64};
+use cck_common::size::SIZE_32;
 use std::default::Default;
 
 use crate::{
