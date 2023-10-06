@@ -4,7 +4,7 @@ use rusqlite as sqlite;
 
 use crate::{
     sql::{self, SQL_INSERT_INTO_PRIVATE_KEYS},
-    Key, PrivateKey, User, PublicKey,
+    Key, PrivateKey, PublicKey, User,
 };
 
 pub struct RingBuilder(Ring);
@@ -115,6 +115,85 @@ impl Ring {
             .map_err(|_| cck_common::Error)?;
 
         Ok(())
+    }
+
+    fn get_user_from_id(&self, id: impl Into<String>) -> cck_common::Result<User> {
+        let id = id.into();
+
+        let mut stmt = self
+            .0
+            .prepare(sql::SQL_SELECT_FROM_USERS_WHERE_ID)
+            .map_err(|_| cck_common::Error)?;
+
+        let mut rows = stmt
+            .query_map(sqlite::params![id], |row| {
+                Ok(User {
+                    id: row.get(0)?,
+                    name: row.get(1)?,
+                    email: row.get(2)?,
+                })
+            })
+            .map_err(|_| cck_common::Error)?;
+
+        let user = rows
+            .next()
+            .ok_or(cck_common::Error)?
+            .map_err(|_| cck_common::Error)?;
+
+        Ok(user)
+    }
+
+    fn get_user_from_email(&self, email: impl Into<String>) -> cck_common::Result<User> {
+        let email = email.into();
+
+        let mut stmt = self
+            .0
+            .prepare(sql::SQL_SELECT_FROM_USERS_WHERE_EMAIL)
+            .map_err(|_| cck_common::Error)?;
+
+        let mut rows = stmt
+            .query_map(sqlite::params![email], |row| {
+                Ok(User {
+                    id: row.get(0)?,
+                    name: row.get(1)?,
+                    email: row.get(2)?,
+                })
+            })
+            .map_err(|_| cck_common::Error)?;
+
+        let user = rows
+            .next()
+            .ok_or(cck_common::Error)?
+            .map_err(|_| cck_common::Error)?;
+
+        Ok(user)
+    }
+
+    fn get_users_from_name(&self, name: impl Into<String>) -> cck_common::Result<Vec<User>> {
+        let name = name.into();
+
+        let mut users = Vec::new();
+
+        let mut stmt = self
+            .0
+            .prepare(sql::SQL_SELECT_FROM_USERS_WHERE_NAME)
+            .map_err(|_| cck_common::Error)?;
+
+        let mut rows = stmt
+            .query_map(sqlite::params![name], |row| {
+                Ok(User {
+                    id: row.get(0)?,
+                    name: row.get(1)?,
+                    email: row.get(2)?,
+                })
+            })
+            .map_err(|_| cck_common::Error)?;
+
+        while let Some(user) = rows.next() {
+            users.push(user.map_err(|_| cck_common::Error)?);
+        }
+
+        Ok(users)
     }
 }
 
