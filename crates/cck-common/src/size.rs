@@ -2,6 +2,9 @@
 /// 1024-byte (1 MiB)
 pub const SIZE_1024: usize = 1024;
 
+/// 128-byte (1 KiB)
+pub const SIZE_128: usize = 128;
+
 /// 64-byte (512 bits)
 pub const SIZE_64: usize = 64;
 
