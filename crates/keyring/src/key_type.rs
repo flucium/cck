@@ -14,6 +14,15 @@ pub enum KeyType {
 }
 
 impl KeyType {
+    pub fn from(string: impl Into<String>) -> cck_common::Result<Self> {
+        let string = string.into();
+        match string.as_ref() {
+            "Ed25519" => Ok(Self::Ed25519),
+            "X25519" => Ok(Self::X25519),
+            _ => Err(cck_common::Error),
+        }
+    }
+
     // fn as_bytes(&self) -> &[u8] {
     //     match self {
     //         KeyType::Ed25519 => &[69, 100, 50, 53, 53, 49, 57],
@@ -47,7 +56,7 @@ impl Display for KeyType {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn key_type_default() {
         let key_type = KeyType::default();
