@@ -19,7 +19,7 @@ pub trait Key {
 
     fn fingerprint(&self) -> &str;
 
-    fn signature(&self) -> Option<&str>;
+    fn signature(&self) -> Option<&[u8]>;
 
     fn is_private_key(&self) -> bool;
 
@@ -29,7 +29,7 @@ pub trait Key {
         expiry: Expiry,
         key: Vec<u8>,
         fingerprint: String,
-        signature: Option<impl Into<String>>,
+        signature: Option<Vec<u8>>,
     ) -> Self;
 
     /// Convert the key to string
@@ -56,7 +56,7 @@ pub struct PublicKey {
     pub(super) expiry: Expiry,
     pub(super) public_key: Vec<u8>,
     pub(super) fingerprint: String,
-    pub(super) signature: Option<String>,
+    pub(super) signature: Option<Vec<u8>>,
 }
 
 impl Key for PublicKey {
@@ -86,7 +86,7 @@ impl Key for PublicKey {
     }
 
     /// Returns the signature of the key
-    fn signature(&self) -> Option<&str> {
+    fn signature(&self) -> Option<&[u8]> {
         Some(self.signature.as_ref()?)
     }
 
@@ -109,7 +109,7 @@ impl Key for PublicKey {
         expiry: Expiry,
         key: Vec<u8>,
         fingerprint: String,
-        signature: Option<impl Into<String>>,
+        signature: Option<Vec<u8>>,
     ) -> Self {
         Self {
             primary: primary,
@@ -164,7 +164,7 @@ pub struct PrivateKey {
     pub(super) private_key: Vec<u8>,
     pub(super) public_key: Vec<u8>,
     pub(super) fingerprint: String,
-    pub(super) signature: Option<String>,
+    pub(super) signature: Option<Vec<u8>>,
 }
 
 impl Key for PrivateKey {
@@ -194,7 +194,7 @@ impl Key for PrivateKey {
     }
 
     /// Returns the signature of the key
-    fn signature(&self) -> Option<&str> {
+    fn signature(&self) -> Option<&[u8]> {
         Some(self.signature.as_ref()?)
     }
 
@@ -215,7 +215,7 @@ impl Key for PrivateKey {
         expiry: Expiry,
         key: Vec<u8>,
         fingerprint: String,
-        signature: Option<impl Into<String>>,
+        signature: Option<Vec<u8>>,
     ) -> Self {
         let public_key = match key_type {
             KeyType::Ed25519 => cck_asymmetric::ed25519::gen_public_key(unsafe {
@@ -348,8 +348,9 @@ impl PrivateKey {
 
         // private_key.signature =
         //     Some(cck_format::base64ct::encode(&signature, &mut [0u8; SIZE_64])?.to_owned());
-        private_key.signature =
-            Some(cck_format::hex::encode(&signature, &mut [0u8; SIZE_64]).to_string());
+        // private_key.signature =
+        //     Some(cck_format::hex::encode(&signature, &mut [0u8; SIZE_64]).to_string());
+        private_key.signature = Some(signature);
 
         Ok(private_key)
     }
@@ -399,5 +400,39 @@ impl ToString for PrivateKey {
     /// ```
     fn to_string(&self) -> String {
         encode(self)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn generate_private_key() {
+        use super::PrivateKey;
+        use crate::KeyType;
+
+        let private_key = PrivateKey::generate(KeyType::Ed25519);
+
+        assert_eq!(private_key.primary, false);
+        assert_eq!(private_key.key_type, KeyType::Ed25519);
+        assert_eq!(private_key.private_key.len(), 32);
+        assert_eq!(private_key.public_key.len(), 32);
+        assert_eq!(private_key.fingerprint.len(), 64);
+        assert_eq!(private_key.signature.is_some(), false);
+    }
+
+    #[test]
+    fn generate_public_key() {
+        use super::PrivateKey;
+        use crate::KeyType;
+
+        let private_key = PrivateKey::generate(KeyType::Ed25519);
+        let public_key = private_key.public_key();
+
+        assert_eq!(public_key.primary, false);
+        assert_eq!(public_key.key_type, KeyType::Ed25519);
+        assert_eq!(public_key.public_key.len(), 32);
+        assert_eq!(public_key.fingerprint.len(), 64);
+        assert_eq!(public_key.signature.is_some(), false);
     }
 }

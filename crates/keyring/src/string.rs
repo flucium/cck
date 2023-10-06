@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use cck_common::size::SIZE_64;
+use cck_common::size::{SIZE_128, SIZE_64};
 
 use crate::{Expiry, Key, KeyType};
 
@@ -43,7 +43,10 @@ pub fn encode(key: &impl Key) -> String {
     let fingerprint = format!("Fingerprint:{}\n", key.fingerprint());
 
     let signature = match key.signature() {
-        Some(signature) => format!("Signature:{}\n", signature),
+        Some(signature) => format!(
+            "Signature:{}\n",
+            cck_format::base64ct::encode(signature, &mut [0u8; SIZE_128]).unwrap()
+        ),
         None => String::from_str("Signature:None").unwrap(),
     };
 
@@ -193,7 +196,7 @@ fn parse_fingerprint(string: String) -> cck_common::Result<String> {
     }
 }
 
-fn parse_signature(string: String) -> cck_common::Result<Option<String>> {
+fn parse_signature(string: String) -> cck_common::Result<Option<Vec<u8>>> {
     match string.is_empty() {
         true => Ok(None),
         false => {
@@ -212,27 +215,46 @@ fn parse_signature(string: String) -> cck_common::Result<Option<String>> {
             } else if value == "None" {
                 Ok(None)
             } else {
-                Ok(Some(value.to_string()))
+                Ok(Some(
+                    cck_format::base64ct::decode(value, &mut [0u8; SIZE_128])?.to_vec(),
+                ))
             }
         }
     }
 }
 
 #[cfg(test)]
-pub mod tests {
-
-    use crate::*;
-    use key_type;
+mod tests {
 
     #[test]
-    fn parsing() {
-        let private_key = PrivateKey::generate(key_type::KeyType::Ed25519);
+    fn encode_private_key() {
+        use crate::{Key, KeyType, PrivateKey, PublicKey};
 
-        let priavte_key_string = private_key.to_string();
+        use super::{decode, encode};
 
-        assert_eq!(
-            private_key,
-            PrivateKey::from_string(priavte_key_string).unwrap()
-        );
+        let private_key = PrivateKey::generate(KeyType::Ed25519);
+
+        let string = encode(&private_key);
+
+        let decoded_private_key = decode(string).unwrap();
+
+        assert_eq!(private_key, decoded_private_key);
+    }
+
+    #[test]
+    fn encode_public_key(){
+        use crate::{Key, KeyType, PrivateKey, PublicKey};
+
+        use super::{decode, encode};
+
+        let private_key = PrivateKey::generate(KeyType::Ed25519);
+
+        let public_key = private_key.public_key();
+
+        let string = encode(&public_key);
+
+        let decoded_public_key = decode(string).unwrap();
+
+        assert_eq!(public_key, decoded_public_key);
     }
 }
