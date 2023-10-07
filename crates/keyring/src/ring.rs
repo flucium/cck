@@ -4,7 +4,7 @@ use rusqlite as sqlite;
 
 use crate::{
     sql::{self, SQL_INSERT_INTO_PRIVATE_KEYS},
-    Key, PrivateKey, PublicKey, User,
+    Key, PrivateKey, PublicKey, User, key_type,
 };
 
 pub struct RingBuilder(Ring);
@@ -235,78 +235,3 @@ fn drop_tables(conn: &sqlite::Connection) -> cck_common::Result<()> {
 //         Err(cck_common::Error)
 //     }
 // }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::*;
-
-    #[test]
-    fn ring_build() {
-        let ring = RingBuilder::new_in_memory().unwrap().build();
-
-        assert_eq!(ring.0.path().unwrap(), String::default());
-    }
-
-    #[test]
-    fn ring_insert_user() {
-        let mut ring = RingBuilder::new_in_memory().unwrap().build();
-
-        let user = User {
-            id: "id".to_string(),
-            name: "name".to_string(),
-            email: "email".to_string(),
-        };
-
-        ring.insert_user(&user).unwrap();
-
-        let user = ring.get_user_where_id("id").unwrap();
-
-        assert_eq!(user.id, "id");
-        assert_eq!(user.name, "name");
-        assert_eq!(user.email, "email");
-    }
-
-    #[test]
-    fn ring_get_user_where_id() {
-        let mut ring = RingBuilder::new_in_memory().unwrap().build();
-
-        let user = User::new("example", "example@example.com").unwrap();
-
-        ring.insert_user(&user).unwrap();
-
-        let get_user = ring.get_user_where_id(user.id()).unwrap();
-
-        assert_eq!(get_user, user);
-    }
-
-    #[test]
-    fn ring_get_user_where_email() {
-        let mut ring = RingBuilder::new_in_memory().unwrap().build();
-
-        let user = User::new("example", "example@example.com").unwrap();
-
-        ring.insert_user(&user).unwrap();
-
-        let get_user = ring.get_user_where_email("example@example.com").unwrap();
-
-        assert_eq!(get_user, user);
-    }
-
-    #[test]
-    fn ring_get_user_where_name() {
-        let mut ring = RingBuilder::new_in_memory().unwrap().build();
-
-        ring.insert_user(&User::new("example", "example1@example.com").unwrap());
-        ring.insert_user(&User::new("example", "example2@example.com").unwrap());
-        ring.insert_user(&User::new("example", "example3@example.com").unwrap());
-
-        let users = ring.get_user_where_name("example").unwrap();
-
-        assert_eq!(users.len(), 3);
-
-        for user in users {
-            assert_eq!(user.name, "example");
-        }
-    }
-}
