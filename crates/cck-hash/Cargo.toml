@@ -11,6 +11,10 @@ digest = "0.10.7"
 #https://github.com/RustCrypto/hashes
 sha2 = "0.10.7"
 
+#https://github.com/RustCrypto/password-hashes
+argon2 = "0.5.2"
+
+
 #https://github.com/BLAKE3-team/BLAKE3/
 blake3 = "1.3.3"
 
