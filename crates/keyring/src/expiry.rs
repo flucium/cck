@@ -24,7 +24,9 @@ impl Expiry {
         Self(0, 0, 0, 0, 0, 0, 0, 0)
     }
 
-    pub fn from_string(string:String)->cck_common::Result<Self>{todo!()}
+    pub fn from_string(string:String)->cck_common::Result<Self>{
+        Self::from_str(string)
+    }
 
     pub fn from_str(string: impl Into<String>) -> cck_common::Result<Self> {
         let value = string.into();
