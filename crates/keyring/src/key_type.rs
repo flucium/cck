@@ -14,7 +14,11 @@ pub enum KeyType {
 }
 
 impl KeyType {
-    pub fn from(string: impl Into<String>) -> cck_common::Result<Self> {
+    pub fn from_string(string:String)->cck_common::Result<Self>{
+        Self::from_str(string)
+    }
+
+    pub fn from_str(string: impl Into<String>) -> cck_common::Result<Self> {
         let string = string.into();
 
         match string {
