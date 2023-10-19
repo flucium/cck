@@ -4,7 +4,7 @@ extern crate alloc;
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
 
-use cck_common::{Result,Error};
+use cck_common::{Error, Result};
 
 #[cfg(target_os = "macos")]
 const LINE_ENDING: pem_rfc7468::LineEnding = pem_rfc7468::LineEnding::LF;
@@ -25,14 +25,14 @@ pub const PEM_LABEL_CCK_PRIVATE_KEY: &Label = "CCK PRIVATE KEY";
 
 pub const PEM_LABEL_CCK_PUBLIC_KEY: &Label = "CCK PUBLIC KEY";
 
-pub const PEM_LABEL_MESSAGE:&Label = "CCK MESSAGE";
+pub const PEM_LABEL_MESSAGE: &Label = "CCK MESSAGE";
 
 /// Encode a PEM block.
-/// 
+///
 /// # Example
 /// ```
 /// let mut buffer:[u8;1024] = [0u8;1024];
-/// 
+///
 /// let pem = pem::encode(pem::PEM_LABEL_PRIVATE_KEY, &private_key, &mut buffer)?;
 /// ```
 pub fn encode<'a, const T: usize>(
@@ -44,11 +44,11 @@ pub fn encode<'a, const T: usize>(
 }
 
 /// Decode a PEM block.
-/// 
+///
 /// # Example
 /// ```
 /// let mut buffer:[u8;1024] = [0u8;0124];
-/// 
+///
 /// let private_key = pem::decode(pem::PEM_LABEL_PRIVATE_KEY, &pem, &mut buffer)?;
 /// ```
 pub fn decode<'a, const T: usize>(
@@ -66,7 +66,7 @@ pub fn decode<'a, const T: usize>(
 }
 
 /// Encode a PEM block.
-/// 
+///
 /// # Example
 /// ```
 /// let pem = pem::encode_string(pem::PEM_LABEL_PRIVATE_KEY, &private_key)?;
@@ -77,7 +77,7 @@ pub fn encode_string(label: &Label, bytes: &[u8]) -> Result<String> {
 }
 
 /// Decode a PEM block.
-/// 
+///
 /// # Example
 /// ```
 /// let private_key = pem::decode_string(pem::PEM_LABEL_PRIVATE_KEY, &pem)?;

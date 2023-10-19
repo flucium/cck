@@ -12,11 +12,11 @@ const HEX_TABLE: [u8; 16] = [
 ];
 
 /// Encode a hex string.
-/// 
+///
 /// # Example
 /// ```
 /// let mut buffer:[u8;1024] = [0u8;1024];
-/// 
+///
 /// let hex = hex::encode(&bytes, &mut buffer);
 /// ```
 pub fn encode<'a, const T: usize>(bytes: &'a [u8], buffer: &'a mut [u8; T]) -> &'a str {
@@ -36,11 +36,11 @@ pub fn encode<'a, const T: usize>(bytes: &'a [u8], buffer: &'a mut [u8; T]) -> &
 }
 
 /// Decode a hex string.
-/// 
+///
 /// # Example
 /// ```
 /// let mut buffer:[u8;1024] = [0u8;1024];
-/// 
+///
 /// let bytes = hex::decode(&hex, &mut buffer);
 /// ```
 pub fn decode<'a, const T: usize>(hex: impl AsRef<[u8]>, buffer: &'a mut [u8; T]) -> [u8; T] {
@@ -64,7 +64,7 @@ pub fn decode<'a, const T: usize>(hex: impl AsRef<[u8]>, buffer: &'a mut [u8; T]
 }
 
 /// Encode a hex string.
-/// 
+///
 /// # Example
 /// ```
 /// let hex = hex::encode_string(&bytes);
@@ -85,7 +85,7 @@ pub fn encode_string(bytes: &[u8]) -> String {
 }
 
 /// Decode a hex string.
-/// 
+///
 /// # Example
 /// ```
 /// let bytes = hex::decode_vec(&hex);
