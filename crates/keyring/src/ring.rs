@@ -3,8 +3,8 @@ use std::path::Path;
 use rusqlite as sqlite;
 
 use crate::{
-    sql::{self, SQL_INSERT_INTO_PRIVATE_KEYS},
-    Key, PrivateKey, PublicKey, User, key_type,
+    sql::{self, SQL_INSERT_INTO_PRIVATE_KEYS, SQL_INSERT_INTO_PUBLIC_KEYS},
+    Expiry, Key, KeyType, PrivateKey, PublicKey, User,
 };
 
 pub struct RingBuilder(Ring);
@@ -57,6 +57,10 @@ impl Ring {
         self.0.close().map_err(|_| cck_common::Error)
     }
 
+    /*
+        Insert
+    */
+
     fn insert_user(&mut self, user: impl Into<User>) -> cck_common::Result<()> {
         let user = user.into();
         self.0
@@ -102,7 +106,7 @@ impl Ring {
         let public_key = public_key.into();
         self.0
             .execute(
-                SQL_INSERT_INTO_PRIVATE_KEYS,
+                SQL_INSERT_INTO_PUBLIC_KEYS,
                 sqlite::params![
                     user.id(),
                     public_key.key_type().to_string(),
@@ -116,6 +120,10 @@ impl Ring {
 
         Ok(())
     }
+
+    /*
+        Get
+    */
 
     fn get_user_from_id(&self, id: impl Into<String>) -> cck_common::Result<User> {
         let id = id.into();
@@ -194,6 +202,225 @@ impl Ring {
         }
 
         Ok(users)
+    }
+
+    fn get_private_key_from_user_and_fingerprint(
+        &self,
+        user: impl Into<User>,
+        fingerpring: impl Into<String>,
+    ) -> cck_common::Result<PrivateKey> {
+        let user = user.into();
+        let fingerpring = fingerpring.into();
+
+        let mut stmt = self
+            .0
+            .prepare(sql::SQL_SELECT_FROM_PRIVATE_KEYS_WHERE_FINGERPRINT)
+            .map_err(|_| cck_common::Error)?;
+
+        let mut rows = stmt
+            .query_map(sqlite::params![user.id(), fingerpring], |row| {
+                Ok(PrivateKey {
+                    primary: row.get(0)?,
+                    key_type: KeyType::from_string(row.get(1)?).unwrap(),
+                    expiry: Expiry::from_string(row.get(2)?).unwrap(),
+                    private_key: row.get(3)?,
+                    public_key: Vec::default(),
+                    fingerprint: row.get(4)?,
+                    signature: match row.get(5) {
+                        Err(_) => None,
+                        Ok(signature) => Some(signature),
+                    },
+                })
+            })
+            .map_err(|_| cck_common::Error)?;
+
+        let private_key = rows
+            .next()
+            .ok_or(cck_common::Error)?
+            .map_err(|_| cck_common::Error)?;
+
+        Ok(private_key)
+    }
+
+    fn get_private_keys_from_user(
+        &self,
+        user: impl Into<User>,
+    ) -> cck_common::Result<Vec<PrivateKey>> {
+        let user = user.into();
+
+        let mut private_keys = Vec::new();
+
+        let mut stmt = self
+            .0
+            .prepare(sql::SQL_SELECT_FROM_PRIVATE_KEYS_WHERE_USER_ID)
+            .map_err(|_| cck_common::Error)?;
+
+        let mut rows = stmt
+            .query_map(sqlite::params![user.id()], |row| {
+                Ok(PrivateKey {
+                    primary: row.get(0)?,
+                    key_type: KeyType::from_string(row.get(1)?).unwrap(),
+                    expiry: Expiry::from_string(row.get(2)?).unwrap(),
+                    private_key: row.get(3)?,
+                    public_key: Vec::default(),
+                    fingerprint: row.get(4)?,
+                    signature: match row.get(5) {
+                        Err(_) => None,
+                        Ok(signature) => Some(signature),
+                    },
+                })
+            })
+            .map_err(|_| cck_common::Error)?;
+
+        while let Some(private_key) = rows.next() {
+            private_keys.push(private_key.map_err(|_| cck_common::Error)?);
+        }
+
+        Ok(private_keys)
+    }
+
+    fn get_priavte_key_from_fingerprint(
+        &self,
+        fingerpring: impl Into<String>,
+    ) -> cck_common::Result<PrivateKey> {
+        let fingerpring = fingerpring.into();
+
+        let mut stmt = self
+            .0
+            .prepare(sql::SQL_SELECT_FROM_PRIVATE_KEYS_WHERE_FINGERPRINT)
+            .map_err(|_| cck_common::Error)?;
+
+        let mut rows = stmt
+            .query_map(sqlite::params![fingerpring], |row| {
+                Ok(PrivateKey {
+                    primary: row.get(0)?,
+                    key_type: KeyType::from_string(row.get(1)?).unwrap(),
+                    expiry: Expiry::from_string(row.get(2)?).unwrap(),
+                    private_key: row.get(3)?,
+                    public_key: Vec::default(),
+                    fingerprint: row.get(4)?,
+                    signature: match row.get(5) {
+                        Err(_) => None,
+                        Ok(signature) => Some(signature),
+                    },
+                })
+            })
+            .map_err(|_| cck_common::Error)?;
+
+        let private_key = rows
+            .next()
+            .ok_or(cck_common::Error)?
+            .map_err(|_| cck_common::Error)?;
+
+        Ok(private_key)
+    }
+
+    fn get_public_key_from_user_and_fingerprint(
+        &self,
+        user: impl Into<User>,
+        fingerpring: impl Into<String>,
+    ) -> cck_common::Result<PublicKey> {
+        let user = user.into();
+        let fingerpring = fingerpring.into();
+
+        let mut stmt = self
+            .0
+            .prepare(sql::SQL_SELECT_FROM_PUBLIC_KEYS_WHERE_FINGERPRINT)
+            .map_err(|_| cck_common::Error)?;
+
+        let mut rows = stmt
+            .query_map(sqlite::params![user.id(), fingerpring], |row| {
+                Ok(PublicKey {
+                    primary: row.get(0)?,
+                    key_type: KeyType::from_string(row.get(1)?).unwrap(),
+                    expiry: Expiry::from_string(row.get(2)?).unwrap(),
+                    public_key: row.get(3)?,
+                    fingerprint: row.get(4)?,
+                    signature: match row.get(5) {
+                        Err(_) => None,
+                        Ok(signature) => Some(signature),
+                    },
+                })
+            })
+            .map_err(|_| cck_common::Error)?;
+
+        let public_key = rows
+            .next()
+            .ok_or(cck_common::Error)?
+            .map_err(|_| cck_common::Error)?;
+
+        Ok(public_key)
+    }
+
+    fn get_public_keys_from_user(
+        &self,
+        user: impl Into<User>,
+    ) -> cck_common::Result<Vec<PublicKey>> {
+        let user = user.into();
+
+        let mut public_keys = Vec::new();
+
+        let mut stmt = self
+            .0
+            .prepare(sql::SQL_SELECT_FROM_PUBLIC_KEYS_WHERE_USER_ID)
+            .map_err(|_| cck_common::Error)?;
+
+        let mut rows = stmt
+            .query_map(sqlite::params![user.id()], |row| {
+                Ok(PublicKey {
+                    primary: row.get(0)?,
+                    key_type: KeyType::from_string(row.get(1)?).unwrap(),
+                    expiry: Expiry::from_string(row.get(2)?).unwrap(),
+                    public_key: row.get(3)?,
+                    fingerprint: row.get(4)?,
+                    signature: match row.get(5) {
+                        Err(_) => None,
+                        Ok(signature) => Some(signature),
+                    },
+                })
+            })
+            .map_err(|_| cck_common::Error)?;
+
+        while let Some(public_key) = rows.next() {
+            public_keys.push(public_key.map_err(|_| cck_common::Error)?);
+        }
+
+        Ok(public_keys)
+    }
+
+    fn get_public_key_from_fingerprint(
+        &self,
+        fingerpring: impl Into<String>,
+    ) -> cck_common::Result<PublicKey> {
+        let fingerpring = fingerpring.into();
+
+        let mut stmt = self
+            .0
+            .prepare(sql::SQL_SELECT_FROM_PUBLIC_KEYS_WHERE_FINGERPRINT)
+            .map_err(|_| cck_common::Error)?;
+
+        let mut rows = stmt
+            .query_map(sqlite::params![fingerpring], |row| {
+                Ok(PublicKey {
+                    primary: row.get(0)?,
+                    key_type: KeyType::from_string(row.get(1)?).unwrap(),
+                    expiry: Expiry::from_string(row.get(2)?).unwrap(),
+                    public_key: row.get(3)?,
+                    fingerprint: row.get(4)?,
+                    signature: match row.get(5) {
+                        Err(_) => None,
+                        Ok(signature) => Some(signature),
+                    },
+                })
+            })
+            .map_err(|_| cck_common::Error)?;
+
+        let public_key = rows
+            .next()
+            .ok_or(cck_common::Error)?
+            .map_err(|_| cck_common::Error)?;
+
+        Ok(public_key)
     }
 }
 
