@@ -87,7 +87,7 @@ impl Ring {
         Insert
     */
 
-    fn insert_user(&mut self, user: impl Into<User>) -> cck_common::Result<()> {
+    pub fn insert_user(&mut self, user: impl Into<User>) -> cck_common::Result<()> {
         let user = user.into();
         self.0
             .execute(
@@ -99,7 +99,7 @@ impl Ring {
         Ok(())
     }
 
-    fn insert_private_key(
+    pub fn insert_private_key(
         &mut self,
         user: impl Into<User>,
         private_key: impl Into<PrivateKey>,
@@ -123,7 +123,7 @@ impl Ring {
         Ok(())
     }
 
-    fn insert_public_key(
+    pub fn insert_public_key(
         &mut self,
         user: impl Into<User>,
         public_key: impl Into<PublicKey>,
@@ -151,7 +151,7 @@ impl Ring {
         Get
     */
 
-    fn get_user_from_id(&self, id: impl Into<String>) -> cck_common::Result<User> {
+    pub fn get_user_from_id(&self, id: impl Into<String>) -> cck_common::Result<User> {
         let id = id.into();
 
         let mut stmt = self
@@ -177,7 +177,7 @@ impl Ring {
         Ok(user)
     }
 
-    fn get_user_from_email(&self, email: impl Into<String>) -> cck_common::Result<User> {
+    pub fn get_user_from_email(&self, email: impl Into<String>) -> cck_common::Result<User> {
         let email = email.into();
 
         let mut stmt = self
@@ -203,7 +203,7 @@ impl Ring {
         Ok(user)
     }
 
-    fn get_users_from_name(&self, name: impl Into<String>) -> cck_common::Result<Vec<User>> {
+    pub fn get_users_from_name(&self, name: impl Into<String>) -> cck_common::Result<Vec<User>> {
         let name = name.into();
 
         let mut users = Vec::new();
@@ -230,7 +230,7 @@ impl Ring {
         Ok(users)
     }
 
-    fn get_private_key_from_user_and_fingerprint(
+    pub fn get_private_key_from_user_and_fingerprint(
         &self,
         user: impl Into<User>,
         fingerpring: impl Into<String>,
@@ -268,7 +268,7 @@ impl Ring {
         Ok(private_key)
     }
 
-    fn get_private_keys_from_user(
+    pub fn get_private_keys_from_user(
         &self,
         user: impl Into<User>,
     ) -> cck_common::Result<Vec<PrivateKey>> {
@@ -305,7 +305,7 @@ impl Ring {
         Ok(private_keys)
     }
 
-    fn get_priavte_key_from_fingerprint(
+    pub fn get_priavte_key_from_fingerprint(
         &self,
         fingerpring: impl Into<String>,
     ) -> cck_common::Result<PrivateKey> {
@@ -341,7 +341,7 @@ impl Ring {
         Ok(private_key)
     }
 
-    fn get_public_key_from_user_and_fingerprint(
+    pub fn get_public_key_from_user_and_fingerprint(
         &self,
         user: impl Into<User>,
         fingerpring: impl Into<String>,
@@ -378,7 +378,7 @@ impl Ring {
         Ok(public_key)
     }
 
-    fn get_public_keys_from_user(
+    pub fn get_public_keys_from_user(
         &self,
         user: impl Into<User>,
     ) -> cck_common::Result<Vec<PublicKey>> {
@@ -414,7 +414,7 @@ impl Ring {
         Ok(public_keys)
     }
 
-    fn get_public_key_from_fingerprint(
+    pub fn get_public_key_from_fingerprint(
         &self,
         fingerpring: impl Into<String>,
     ) -> cck_common::Result<PublicKey> {
@@ -466,18 +466,18 @@ fn init_tables(conn: &mut sqlite::Connection) -> cck_common::Result<()> {
     Ok(())
 }
 
-fn drop_tables(conn: &sqlite::Connection) -> cck_common::Result<()> {
-    conn.execute(sql::SQL_DROP_TABLE_USERS, [])
-        .map_err(|_| cck_common::Error)?;
+// fn drop_tables(conn: &sqlite::Connection) -> cck_common::Result<()> {
+//     conn.execute(sql::SQL_DROP_TABLE_USERS, [])
+//         .map_err(|_| cck_common::Error)?;
 
-    conn.execute(sql::SQL_DROP_TABLE_PRIVATE_KEYS, [])
-        .map_err(|_| cck_common::Error)?;
+//     conn.execute(sql::SQL_DROP_TABLE_PRIVATE_KEYS, [])
+//         .map_err(|_| cck_common::Error)?;
 
-    conn.execute(sql::SQL_DROP_TABLE_PUBLIC_KEYS, [])
-        .map_err(|_| cck_common::Error)?;
+//     conn.execute(sql::SQL_DROP_TABLE_PUBLIC_KEYS, [])
+//         .map_err(|_| cck_common::Error)?;
 
-    Ok(())
-}
+//     Ok(())
+// }
 
 // fn remove_database_file(path: &Path) -> cck_common::Result<()> {
 //     if path.exists() {
