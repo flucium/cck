@@ -109,14 +109,14 @@ pub const SQL_SELECT_FROM_PUBLIC_KEYS_WHERE_USER_ID_AND_FINGERPRINT: &str =
 */
 /// Create the table keyring if it does not exist
 pub const SQL_CREATE_TABLE_KEYRING: &str =
-    "CREATE TABLE IF NOT EXISTS keyring (password BLOB, salt BLOB);";
+    "CREATE TABLE IF NOT EXISTS keyring (password BLOB, salt BLOB,enable boolean);";
 
 /// Drop the table keyring
 pub const SQL_DROP_TABLE_KEYRING: &str = "DROP TABLE keyring;";
 
 /// Insert a new password into the table keyring
 pub const SQL_INSERT_INTO_KEYRING: &str =
-    "INSERT INTO keyring (password BLOB, salt BLOB) VALUES(?, ?);";
+    "INSERT INTO keyring (password BLOB, salt BLOB,enable boolean) VALUES(?, ?, ?);";
 
 /// Select all passwords from the table keyring
 ///
