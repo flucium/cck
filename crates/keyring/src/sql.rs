@@ -102,23 +102,3 @@ pub const SQL_SELECT_FROM_PUBLIC_KEYS_WHERE_FINGERPRINT: &str =
 /// `SQL` - SELECT * FROM public_keys WHERE user_id = ? AND fingerprint = ?;
 pub const SQL_SELECT_FROM_PUBLIC_KEYS_WHERE_USER_ID_AND_FINGERPRINT: &str =
     "SELECT * FROM public_keys WHERE user_id = ? AND fingerprint = ?;";
-
-/*
-    SQL statements for the database
-    Table: keyring
-*/
-/// Create the table keyring if it does not exist
-pub const SQL_CREATE_TABLE_KEYRING: &str =
-    "CREATE TABLE IF NOT EXISTS keyring (password BLOB, salt BLOB,enable boolean);";
-
-/// Drop the table keyring
-pub const SQL_DROP_TABLE_KEYRING: &str = "DROP TABLE keyring;";
-
-/// Insert a new password into the table keyring
-pub const SQL_INSERT_INTO_KEYRING: &str =
-    "INSERT INTO keyring (password BLOB, salt BLOB,enable boolean) VALUES(?, ?, ?);";
-
-/// Select all passwords from the table keyring
-///
-/// `SQL` - SELECT * FROM keyring;
-pub const SQL_SELECT_FROM_KEYRING: &str = "SELECT * FROM keyring;";
