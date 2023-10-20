@@ -39,16 +39,11 @@ impl RingBuilder {
         Ok(Self(ring))
     }
 
-    /// Password for keyring
-    ///
-    /// # Example
-    /// ```
-    /// let ring = RingBuilder::new("./database").password("password").build().unwrap().password("password").unwrap();
-    /// ```
-    pub fn password(&mut self, password: impl AsRef<[u8]>) -> cck_common::Result<&mut Self> {
+    // Todo!
+    // pub fn password(&mut self, password: impl AsRef<[u8]>) -> cck_common::Result<&mut Self> {
 
-        Ok(self)
-    }
+    //     Ok(self)
+    // }
 
     /// Ring build
     ///
