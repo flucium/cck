@@ -7,9 +7,16 @@ use crate::{
     Expiry, Key, KeyType, PrivateKey, PublicKey, User,
 };
 
+/// RingBuilder
 pub struct RingBuilder(Ring);
 
 impl RingBuilder {
+    /// RingBuilder
+    ///
+    /// # Example
+    /// ```
+    /// let ring_builder = RingBuilder::new("./database");
+    /// ```
     pub fn new(path: &Path) -> cck_common::Result<Self> {
         let mut ring = Ring::open(path)?;
 
@@ -18,6 +25,12 @@ impl RingBuilder {
         Ok(Self(ring))
     }
 
+    /// RingBuilder
+    ///
+    /// # Example
+    /// ```
+    /// let mut ring_builder = RingBuilder::new_in_memory();
+    /// ```
     pub fn new_in_memory() -> cck_common::Result<Self> {
         let mut ring = Ring::open_in_memory()?;
 
@@ -26,11 +39,22 @@ impl RingBuilder {
         Ok(Self(ring))
     }
 
+    pub fn password(&mut self, password: impl AsRef<[u8]>) -> &mut Self {
+        todo!()
+    }
+
+    /// Ring build
+    ///
+    /// # Example
+    /// ```
+    /// let ring = RingBuilder::new("./database").build();
+    /// ```
     pub fn build(self) -> Ring {
         self.0
     }
 }
 
+/// Ring
 pub struct Ring(sqlite::Connection);
 
 impl Ring {
