@@ -23,6 +23,8 @@ pub trait Key {
 
     fn is_private_key(&self) -> bool;
 
+    fn encode(&self) -> String;
+
     fn from(
         primary: bool,
         key_type: KeyType,
@@ -97,32 +99,6 @@ impl Key for PublicKey {
         false
     }
 
-    /// Generates based on types and structures.
-    ///
-    /// # Example
-    /// ```
-    /// let public_key = PublicKey::from(true, KeyType::Ed25519, Expiry::default(), vec![0; 32], None);
-    /// ```
-    fn from(
-        primary: bool,
-        key_type: KeyType,
-        expiry: Expiry,
-        key: Vec<u8>,
-        fingerprint: Vec<u8>,
-        signature: Option<Vec<u8>>,
-    ) -> Self {
-        Self {
-            primary: primary,
-            key_type: key_type,
-            expiry: expiry,
-            public_key: key,
-            fingerprint: fingerprint,
-            signature: signature.map(|signature| signature.into()),
-        }
-    }
-}
-
-impl ToString for PublicKey {
     /// Convert the public key to string
     ///
     /// Format is:
@@ -145,8 +121,32 @@ impl ToString for PublicKey {
     ///
     /// let string = private_key.to_string();
     /// ```
-    fn to_string(&self) -> String {
+    fn encode(&self) -> String {
         encode(self)
+    }
+
+    /// Generates based on types and structures.
+    ///
+    /// # Example
+    /// ```
+    /// let public_key = PublicKey::from(true, KeyType::Ed25519, Expiry::default(), vec![0; 32], None);
+    /// ```
+    fn from(
+        primary: bool,
+        key_type: KeyType,
+        expiry: Expiry,
+        key: Vec<u8>,
+        fingerprint: Vec<u8>,
+        signature: Option<Vec<u8>>,
+    ) -> Self {
+        Self {
+            primary: primary,
+            key_type: key_type,
+            expiry: expiry,
+            public_key: key,
+            fingerprint: fingerprint,
+            signature: signature.map(|signature| signature.into()),
+        }
     }
 }
 
@@ -201,6 +201,32 @@ impl Key for PrivateKey {
     /// Returns true if the key is a private key
     fn is_private_key(&self) -> bool {
         true
+    }
+
+    /// Convert the private key to string
+    ///
+    /// Format is:
+    ///
+    /// *Primary: true*
+    ///
+    /// *KeyType: Ed25519*
+    ///
+    /// *Expiry: 2023/01/01*
+    ///
+    /// *Key: aaaaaaaaaa...*
+    ///
+    /// *Fingerprint: blake3:aaaaaaaaaa...*
+    ///
+    /// *Signature: aaaaaaaaaa...*
+    ///
+    /// # Example
+    /// ```
+    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
+    ///
+    /// let string = private_key.to_string();
+    /// ```
+    fn encode(&self) -> String {
+        encode(self)
     }
 
     /// Generates based on types and structures.
@@ -372,33 +398,5 @@ impl PrivateKey {
             fingerprint: self.fingerprint.clone(),
             signature: self.signature.clone(),
         }
-    }
-}
-
-impl ToString for PrivateKey {
-    /// Convert the private key to string
-    ///
-    /// Format is:
-    ///
-    /// *Primary: true*
-    ///
-    /// *KeyType: Ed25519*
-    ///
-    /// *Expiry: 2023/01/01*
-    ///
-    /// *Key: aaaaaaaaaa...*
-    ///
-    /// *Fingerprint: blake3:aaaaaaaaaa...*
-    ///
-    /// *Signature: aaaaaaaaaa...*
-    ///
-    /// # Example
-    /// ```
-    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
-    ///
-    /// let string = private_key.to_string();
-    /// ```
-    fn to_string(&self) -> String {
-        encode(self)
     }
 }
