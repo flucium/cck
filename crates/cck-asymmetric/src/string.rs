@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use cck_common::size::{SIZE_128, SIZE_64};
 
-use crate::{Key, KeyType, Expiry};
+use crate::{Expiry, Key, KeyType};
 
 /// encode a key to a string
 ///
