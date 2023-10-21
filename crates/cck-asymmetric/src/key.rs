@@ -23,7 +23,12 @@ pub trait Key {
 
     fn is_private_key(&self) -> bool;
 
-    fn encode(&self) -> String;
+    fn encode(&self) -> String
+    where
+        Self: Sized,
+    {
+        encode(self)
+    }
 
     fn from(
         primary: bool,
@@ -35,7 +40,7 @@ pub trait Key {
     ) -> Self;
 
     /// Convert the key to string
-    fn from_string(string: impl Into<String>) -> cck_common::Result<Self>
+    fn decode(string: impl Into<String>) -> cck_common::Result<Self>
     where
         Self: Sized,
     {
@@ -97,32 +102,6 @@ impl Key for PublicKey {
     /// Note that this is a public key, so it returns false.
     fn is_private_key(&self) -> bool {
         false
-    }
-
-    /// Convert the public key to string
-    ///
-    /// Format is:
-    ///
-    /// *Primary: true*
-    ///
-    /// *KeyType: Ed25519*
-    ///
-    /// *Expiry: 2023/01/01*
-    ///
-    /// *Key: aaaaaaaaaa...*
-    ///
-    /// *Fingerprint: blake3:aaaaaaaaaa...*
-    ///
-    /// *Signature: aaaaaaaaaa...*
-    ///
-    /// # Example
-    /// ```
-    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
-    ///
-    /// let string = private_key.to_string();
-    /// ```
-    fn encode(&self) -> String {
-        encode(self)
     }
 
     /// Generates based on types and structures.
@@ -201,32 +180,6 @@ impl Key for PrivateKey {
     /// Returns true if the key is a private key
     fn is_private_key(&self) -> bool {
         true
-    }
-
-    /// Convert the private key to string
-    ///
-    /// Format is:
-    ///
-    /// *Primary: true*
-    ///
-    /// *KeyType: Ed25519*
-    ///
-    /// *Expiry: 2023/01/01*
-    ///
-    /// *Key: aaaaaaaaaa...*
-    ///
-    /// *Fingerprint: blake3:aaaaaaaaaa...*
-    ///
-    /// *Signature: aaaaaaaaaa...*
-    ///
-    /// # Example
-    /// ```
-    /// let private_key = PrivateKey::generate(KeyType::Ed25519)
-    ///
-    /// let string = private_key.to_string();
-    /// ```
-    fn encode(&self) -> String {
-        encode(self)
     }
 
     /// Generates based on types and structures.
