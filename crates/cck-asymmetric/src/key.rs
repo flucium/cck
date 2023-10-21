@@ -218,11 +218,11 @@ impl Key for PrivateKey {
         signature: Option<Vec<u8>>,
     ) -> Self {
         let public_key = match key_type {
-            KeyType::Ed25519 => cck_asymmetric::ed25519::gen_public_key(unsafe {
+            KeyType::Ed25519 => crate::ed25519::gen_public_key(unsafe {
                 key.get_unchecked(..SIZE_32).try_into().unwrap()
             })
             .to_vec(),
-            KeyType::X25519 => cck_asymmetric::x25519::gen_public_key(unsafe {
+            KeyType::X25519 => crate::x25519::gen_public_key(unsafe {
                 key.get_unchecked(..SIZE_32).try_into().unwrap()
             })
             .to_vec(),
@@ -250,14 +250,14 @@ impl PrivateKey {
     pub fn generate(key_type: KeyType) -> Self {
         let (private_key, public_key) = match key_type {
             KeyType::Ed25519 => {
-                let private_key = cck_asymmetric::ed25519::gen_private_key();
-                let public_key = cck_asymmetric::ed25519::gen_public_key(&private_key);
+                let private_key = crate::ed25519::gen_private_key();
+                let public_key = crate::ed25519::gen_public_key(&private_key);
                 (private_key.to_vec(), public_key.to_vec())
             }
 
             KeyType::X25519 => {
-                let private_key = cck_asymmetric::x25519::gen_private_key();
-                let public_key = cck_asymmetric::x25519::gen_public_key(&private_key);
+                let private_key = crate::x25519::gen_private_key();
+                let public_key = crate::x25519::gen_public_key(&private_key);
                 (private_key.to_vec(), public_key.to_vec())
             }
         };
@@ -332,7 +332,7 @@ impl PrivateKey {
         private_key.set_primary(false)?;
 
         let signature = match self.key_type {
-            KeyType::Ed25519 => cck_asymmetric::ed25519::sign(
+            KeyType::Ed25519 => crate::ed25519::sign(
                 unsafe {
                     self.private_key
                         .get_unchecked(..SIZE_32)
@@ -402,4 +402,3 @@ impl ToString for PrivateKey {
         encode(self)
     }
 }
-

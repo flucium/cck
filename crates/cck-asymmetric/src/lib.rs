@@ -1,2 +1,10 @@
 pub mod ed25519;
+pub(crate) mod fingerprint;
+mod expiry;
+mod key;
+mod key_type;
+mod string;
 pub mod x25519;
+pub use expiry::*;
+pub use key::*;
+pub use key_type::*;

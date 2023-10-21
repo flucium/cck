@@ -4,8 +4,10 @@ use rusqlite as sqlite;
 
 use crate::{
     sql::{self, SQL_INSERT_INTO_PRIVATE_KEYS, SQL_INSERT_INTO_PUBLIC_KEYS},
-    Expiry, Key, KeyType, PrivateKey, PublicKey, User,
+    user::User,
 };
+
+use cck_asymmetric::{Expiry, Key, KeyType, PrivateKey, PublicKey};
 
 /// RingBuilder
 pub struct RingBuilder(Ring);
@@ -158,7 +160,7 @@ impl Ring {
     */
 
     /// Get a user from the table users where the id matches
-    pub fn get_user_from_id(&self, id: impl Into<String>) -> cck_common::Result<User> {
+    pub fn get_user_where_id_matches(&self, id: impl Into<String>) -> cck_common::Result<User> {
         let id = id.into();
 
         let mut stmt = self
@@ -185,7 +187,7 @@ impl Ring {
     }
 
     /// Get a user from the table users where the email matches
-    pub fn get_user_from_email(&self, email: impl Into<String>) -> cck_common::Result<User> {
+    pub fn get_user_where_email_matches(&self, email: impl Into<String>) -> cck_common::Result<User> {
         let email = email.into();
 
         let mut stmt = self
@@ -212,7 +214,7 @@ impl Ring {
     }
 
     /// Get a user from the table users where the name matches
-    pub fn get_users_from_name(&self, name: impl Into<String>) -> cck_common::Result<Vec<User>> {
+    pub fn get_users_where_name_matches(&self, name: impl Into<String>) -> cck_common::Result<Vec<User>> {
         let name = name.into();
 
         let mut users = Vec::new();
@@ -240,7 +242,7 @@ impl Ring {
     }
 
     /// Get a private_key from the table private_keys where the user and fingerpring matches
-    pub fn get_private_key_from_user_and_fingerprint(
+    pub fn get_private_key_where_user_and_fingerprint_matches(
         &self,
         user: impl Into<User>,
         fingerpring: impl Into<String>,
@@ -255,21 +257,20 @@ impl Ring {
 
         let mut rows = stmt
             .query_map(sqlite::params![user.id(), fingerpring], |row| {
-                Ok(PrivateKey {
-                    primary: match row.get(1)? {
+                Ok(<PrivateKey as cck_asymmetric::Key>::from(
+                    match row.get(1)? {
                         0 => false,
                         _ => true,
                     },
-                    key_type: KeyType::from_string(row.get(1)?).unwrap(),
-                    expiry: Expiry::from_string(row.get(2)?).unwrap(),
-                    private_key: row.get(3)?,
-                    public_key: Vec::default(),
-                    fingerprint: row.get(4)?,
-                    signature: match row.get(5) {
+                    KeyType::from_string(row.get(1)?).unwrap(),
+                    Expiry::from_string(row.get(2)?).unwrap(),
+                    row.get(3)?,
+                    row.get(4)?,
+                    match row.get(5) {
                         Err(_) => None,
                         Ok(signature) => Some(signature),
                     },
-                })
+                ))
             })
             .map_err(|_| cck_common::Error)?;
 
@@ -282,7 +283,7 @@ impl Ring {
     }
 
     /// Get a private_key from the table private_keys where the fingerpring matches
-    pub fn get_private_key_from_fingerprint(
+    pub fn get_private_key_where_fingerprint_matches(
         &self,
         fingerpring: impl Into<String>,
     ) -> cck_common::Result<PrivateKey> {
@@ -295,21 +296,20 @@ impl Ring {
 
         let mut rows = stmt
             .query_map(sqlite::params![fingerpring], |row| {
-                Ok(PrivateKey {
-                    primary: match row.get(1)? {
+                Ok(<PrivateKey as cck_asymmetric::Key>::from(
+                    match row.get(1)? {
                         0 => false,
                         _ => true,
                     },
-                    key_type: KeyType::from_string(row.get(1)?).unwrap(),
-                    expiry: Expiry::from_string(row.get(2)?).unwrap(),
-                    private_key: row.get(3)?,
-                    public_key: Vec::default(),
-                    fingerprint: row.get(4)?,
-                    signature: match row.get(5) {
+                    KeyType::from_string(row.get(1)?).unwrap(),
+                    Expiry::from_string(row.get(2)?).unwrap(),
+                    row.get(3)?,
+                    row.get(4)?,
+                    match row.get(5) {
                         Err(_) => None,
                         Ok(signature) => Some(signature),
                     },
-                })
+                ))
             })
             .map_err(|_| cck_common::Error)?;
 
@@ -322,7 +322,7 @@ impl Ring {
     }
 
     /// Get a private_key from the table private_keys where the user matches
-    pub fn get_private_keys_from_user(
+    pub fn get_private_keys_where_user_matches(
         &self,
         user: impl Into<User>,
     ) -> cck_common::Result<Vec<PrivateKey>> {
@@ -337,21 +337,20 @@ impl Ring {
 
         let mut rows = stmt
             .query_map(sqlite::params![user.id()], |row| {
-                Ok(PrivateKey {
-                    primary: match row.get(1)? {
+                Ok(<PrivateKey as cck_asymmetric::Key>::from(
+                    match row.get(1)? {
                         0 => false,
                         _ => true,
                     },
-                    key_type: KeyType::from_string(row.get(2)?).unwrap(),
-                    expiry: Expiry::from_string(row.get(3)?).unwrap(),
-                    private_key: row.get(4)?,
-                    public_key: Vec::default(),
-                    fingerprint: row.get(5)?,
-                    signature: match row.get(6) {
+                    KeyType::from_string(row.get(2)?).unwrap(),
+                    Expiry::from_string(row.get(3)?).unwrap(),
+                    row.get(4)?,
+                    row.get(5)?,
+                    match row.get(6) {
                         Err(_) => None,
                         Ok(signature) => Some(signature),
                     },
-                })
+                ))
             })
             .map_err(|_| cck_common::Error)?;
 
@@ -363,7 +362,7 @@ impl Ring {
     }
 
     /// Get a public_key from the table public_keys where the user and fingerpring matches
-    pub fn get_public_key_from_user_and_fingerprint(
+    pub fn get_public_key_where_user_and_fingerprint_matches(
         &self,
         user: impl Into<User>,
         fingerpring: impl Into<String>,
@@ -378,20 +377,20 @@ impl Ring {
 
         let mut rows = stmt
             .query_map(sqlite::params![user.id(), fingerpring], |row| {
-                Ok(PublicKey {
-                    primary: match row.get(1)? {
+                Ok(<PublicKey as cck_asymmetric::Key>::from(
+                    match row.get(1)? {
                         0 => false,
                         _ => true,
                     },
-                    key_type: KeyType::from_string(row.get(2)?).unwrap(),
-                    expiry: Expiry::from_string(row.get(3)?).unwrap(),
-                    public_key: row.get(4)?,
-                    fingerprint: row.get(5)?,
-                    signature: match row.get(6) {
+                    KeyType::from_string(row.get(2)?).unwrap(),
+                    Expiry::from_string(row.get(3)?).unwrap(),
+                    row.get(4)?,
+                    row.get(5)?,
+                    match row.get(6) {
                         Err(_) => None,
                         Ok(signature) => Some(signature),
                     },
-                })
+                ))
             })
             .map_err(|_| cck_common::Error)?;
 
@@ -404,7 +403,7 @@ impl Ring {
     }
 
     /// Get a public_key from the table public_keys where the user matches
-    pub fn get_public_keys_from_user(
+    pub fn get_public_keys_where_user_matches(
         &self,
         user: impl Into<User>,
     ) -> cck_common::Result<Vec<PublicKey>> {
@@ -419,20 +418,20 @@ impl Ring {
 
         let mut rows = stmt
             .query_map(sqlite::params![user.id()], |row| {
-                Ok(PublicKey {
-                    primary: match row.get(1)? {
+                Ok(<PublicKey as cck_asymmetric::Key>::from(
+                    match row.get(1)? {
                         0 => false,
                         _ => true,
                     },
-                    key_type: KeyType::from_string(row.get(2)?).unwrap(),
-                    expiry: Expiry::from_string(row.get(3)?).unwrap(),
-                    public_key: row.get(4)?,
-                    fingerprint: row.get(5)?,
-                    signature: match row.get(6) {
+                    KeyType::from_string(row.get(2)?).unwrap(),
+                    Expiry::from_string(row.get(3)?).unwrap(),
+                    row.get(4)?,
+                    row.get(5)?,
+                    match row.get(6) {
                         Err(_) => None,
                         Ok(signature) => Some(signature),
                     },
-                })
+                ))
             })
             .map_err(|_| cck_common::Error)?;
 
@@ -444,7 +443,7 @@ impl Ring {
     }
 
     /// Get a public_key from the table public_keys where the fingerpring matches
-    pub fn get_public_key_from_fingerprint(
+    pub fn get_public_key_where_fingerprint_matches(
         &self,
         fingerpring: impl Into<String>,
     ) -> cck_common::Result<PublicKey> {
@@ -457,20 +456,20 @@ impl Ring {
 
         let mut rows = stmt
             .query_map(sqlite::params![fingerpring], |row| {
-                Ok(PublicKey {
-                    primary: match row.get(1)? {
+                Ok(<PublicKey as cck_asymmetric::Key>::from(
+                    match row.get(1)? {
                         0 => false,
                         _ => true,
                     },
-                    key_type: KeyType::from_string(row.get(2)?).unwrap(),
-                    expiry: Expiry::from_string(row.get(3)?).unwrap(),
-                    public_key: row.get(4)?,
-                    fingerprint: row.get(5)?,
-                    signature: match row.get(6) {
+                    KeyType::from_string(row.get(2)?).unwrap(),
+                    Expiry::from_string(row.get(3)?).unwrap(),
+                    row.get(4)?,
+                    row.get(5)?,
+                    match row.get(6) {
                         Err(_) => None,
                         Ok(signature) => Some(signature),
                     },
-                })
+                ))
             })
             .map_err(|_| cck_common::Error)?;
 
