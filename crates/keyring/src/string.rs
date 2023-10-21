@@ -298,7 +298,7 @@ mod tests {
 
         let expiry = parse_expiry(string).unwrap();
 
-        assert_eq!(expiry, crate::Expiry::from_string("2023/01/01").unwrap());
+        assert_eq!(expiry, crate::Expiry::from_str("2023/01/01").unwrap());
     }
 
     #[test]
