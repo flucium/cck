@@ -1,5 +1,5 @@
 use common::{
-    size::{SIZE_16, SIZE_24, SIZE_32},
+    size::{SIZE_16, SIZE_24, SIZE_32, SIZE_64},
     Error, ErrorKind, Result,
 };
 
@@ -15,25 +15,99 @@ use crate::{
 pub type SharedSecret = Secret;
 
 pub trait Key {
+    /// Returns the key as bytes
     fn as_bytes(&self) -> &[u8];
 
+    /// Returns the fingerprint of the key
     fn fingerprint(&self) -> &[u8];
 
+    /// Returns the signature of the key
     fn signature(&self) -> Option<&[u8]>;
 
+    /// Verify the signature of the key
+    ///
+    /// # Arguments
+    ///
+    /// * `public_key` - The public key to verify the signature
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the key type is not supported, the signature is missing(None), or the signature is invalid.
+    ///
+    /// # Example
+    /// ```
+    /// let private_key = PrivateKey::generate(KeyType::Ed25519);
+    ///
+    /// let public_key = private_key.public_key();
+    ///
+    /// let sub_private_key =  private_key.derive_key(KeyType::X25519).unwrap();
+    ///
+    /// let sub_public_key = sub_private_key.public_key();
+    ///
+    /// assert!(sub_private_key.verify(&public_key).is_ok());
+    ///
+    /// assert!(sub_public_key.verify(&public_key).is_ok());
+    /// ```
+    fn verify(&self, public_key: &PublicKey) -> Result<()> {
+        // if public_key.is_primary() == false {
+        //     Err(Error::new(ErrorKind::Dummy, String::default()))?
+        // }
+
+        let signature = self
+            .signature()
+            .ok_or(Error::new(ErrorKind::Dummy, String::default()))?;
+
+        match public_key.key_type() {
+            KeyType::Ed25519 => {
+                let public_key = unsafe {
+                    public_key
+                        .as_bytes()
+                        .get_unchecked(..SIZE_32)
+                        .try_into()
+                        .unwrap()
+                };
+
+                crate::asymmetric::ed25519::verify(public_key, self.as_bytes(), unsafe {
+                    signature.get_unchecked(..SIZE_64).try_into().unwrap()
+                })?;
+            }
+            KeyType::X25519 => Err(Error::new(ErrorKind::Dummy, String::default()))?,
+        }
+
+        Ok(())
+    }
+
+    /// Returns the length of the key
     fn len(&self) -> usize;
 }
 
 pub trait AsymmetricKey: Key {
+    /// Returns true if the key is primary
     fn is_primary(&self) -> bool;
 
+    /// Returns the key type
     fn key_type(&self) -> &KeyType;
 
+    /// Returns the expiry of the key
     fn expiry(&self) -> &Expiry;
 
     fn is_private_key(&self) -> bool;
 
     /// Create a new key from the given parameters
+    ///
+    /// # Arguments
+    ///
+    /// * `primary` - Whether the key is primary
+    ///
+    /// * `key_type` - The key type
+    ///
+    /// * `expiry` - The expiry of the key
+    ///
+    /// * `key` - The raw key bytes
+    ///
+    /// * `fingerprint` - The fingerprint of the key
+    ///
+    /// * `signature` - The signature of the key
     fn from(
         primary: bool,
         key_type: KeyType,
@@ -278,39 +352,32 @@ impl PrivateKey {
 }
 
 impl Key for PrivateKey {
-    /// Returns the raw key bytes
     fn as_bytes(&self) -> &[u8] {
         &self.private_key
     }
 
-    /// Returns the fingerprint of the key
     fn fingerprint(&self) -> &[u8] {
         &self.fingerprint
     }
 
-    /// Returns the signature of the key
     fn signature(&self) -> Option<&[u8]> {
         self.signature.as_deref()
     }
 
-    /// Returns the length of the key
     fn len(&self) -> usize {
         self.private_key.len()
     }
 }
 
 impl AsymmetricKey for PrivateKey {
-    /// Returns true if the key is primary
     fn is_primary(&self) -> bool {
         self.primary
     }
 
-    /// Returns the key type
     fn key_type(&self) -> &KeyType {
         &self.key_type
     }
 
-    /// Returns the expiry of the key
     fn expiry(&self) -> &Expiry {
         &self.expiry
     }
@@ -372,39 +439,32 @@ pub struct PublicKey {
 }
 
 impl Key for PublicKey {
-    /// Returns the raw key bytes
     fn as_bytes(&self) -> &[u8] {
         &self.public_key
     }
 
-    /// Returns the fingerprint of the key
     fn fingerprint(&self) -> &[u8] {
         &self.fingerprint
     }
 
-    /// Returns the signature of the key
     fn signature(&self) -> Option<&[u8]> {
         self.signature.as_deref()
     }
 
-    /// Returns the length of the key
     fn len(&self) -> usize {
         self.public_key.len()
     }
 }
 
 impl AsymmetricKey for PublicKey {
-    /// Returns true if the key is primary
     fn is_primary(&self) -> bool {
         self.primary
     }
 
-    /// Returns the key type
     fn key_type(&self) -> &KeyType {
         &self.key_type
     }
 
-    /// Returns the expiry of the key
     fn expiry(&self) -> &Expiry {
         &self.expiry
     }
