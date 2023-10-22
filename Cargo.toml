@@ -1,0 +1,26 @@
+[package]
+name = "cck"
+version = "0.0.1"
+edition = "2021"
+
+[[bin]]
+name = "cck"
+path = "./src/cli/main.rs"
+#required-features = ["alloc"]
+
+#[[bin]]
+#name = "cckd"
+#path = "./src/broker/main.rs"
+
+[worksoace]
+members = [
+    "crates/*"
+]
+
+[dependencies]
+
+# Internal
+common = { version = "0.0.1", path = "./crates/common" }
+crypto = { version = "0.0.1", path = "./crates/crypto" }
+
+[features]
