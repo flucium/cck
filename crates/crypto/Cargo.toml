@@ -1,0 +1,41 @@
+[package]
+name = "crypto"
+version = "0.0.1"
+edition = "2021"
+
+
+[dependencies]
+# https://github.com/BLAKE3-team/BLAKE3/
+blake3 = "1.3.3"
+
+# https://github.com/RustCrypto/traits/
+digest = "0.10.7"
+aead = { version = "0.5.2", features=["arrayvec"] }
+signature = "2.1.0"
+
+# https://github.com/RustCrypto/hashes
+sha2 = "0.10.7"
+
+# https://github.com/RustCrypto/password-hashes
+argon2 = "0.5.2"
+
+# https://github.com/RustCrypto/AEADs/
+chacha20poly1305 = "0.10.1"
+aes-gcm = "0.10.2"
+
+#https://github.com/dalek-cryptography/ed25519-dalek/
+ed25519-dalek = { version="2.0.0", features=["rand_core"] }
+
+#https://github.com/dalek-cryptography/x25519-dalek/
+x25519-dalek = { version="2.0.0", features=["static_secrets"] }
+
+# https://github.com/rust-random/
+rand = "0.8.5"
+rand_chacha = "0.3.1"
+
+
+# Internal
+common = { version = "0.0.1", path = "../common" }
+
+[features]
+alloc = ["aead/alloc", "chacha20poly1305/alloc", "aes-gcm/alloc"]
