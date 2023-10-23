@@ -35,24 +35,24 @@ pub fn encode(key: &impl AsymmetricKey) -> String {
     let k = if key.is_private_key() {
         format!(
             "PrivateKey:{}\n",
-            base64ct::encode(key.as_bytes(), &mut [0u8; SIZE_64]).unwrap()
+            base64ct::encode(key.as_bytes())
         )
     } else {
         format!(
             "PublicKey:{}\n",
-            base64ct::encode(key.as_bytes(), &mut [0u8; SIZE_64]).unwrap()
+            base64ct::encode(key.as_bytes())
         )
     };
 
     let fingerprint = format!(
         "Fingerprint:{}\n",
-        base64ct::encode(key.fingerprint(), &mut [0u8; SIZE_64]).unwrap()
+        base64ct::encode(key.fingerprint())
     );
 
     let signature = match key.signature() {
         Some(signature) => format!(
             "Signature:{}\n",
-            base64ct::encode(signature, &mut [0u8; SIZE_128]).unwrap()
+            base64ct::encode(signature)
         ),
         None => String::from_str("Signature:None").unwrap(),
     };
@@ -179,7 +179,7 @@ fn parse_key(string: String) -> Result<Vec<u8>> {
                 Err(Error::new(ErrorKind::Dummy, String::default()))?
             }
 
-            Ok(base64ct::decode(value, &mut [0u8; SIZE_64])?.to_vec())
+            Ok(base64ct::decode(value)?)
         }
     }
 }
@@ -197,7 +197,7 @@ fn parse_fingerprint(string: String) -> Result<Vec<u8>> {
                 Err(Error::new(ErrorKind::Dummy, String::default()))?
             }
 
-            Ok(base64ct::decode(value, &mut [0u8; SIZE_64])?.to_vec())
+            Ok(base64ct::decode(value)?)
         }
     }
 }
@@ -222,7 +222,7 @@ fn parse_signature(string: String) -> Result<Option<Vec<u8>>> {
                 Ok(None)
             } else {
                 Ok(Some(
-                    base64ct::decode(value, &mut [0u8; SIZE_128])?.to_vec(),
+                    base64ct::decode(value)?
                 ))
             }
         }

@@ -168,7 +168,7 @@ impl Secret {
         let mut bytes = [0; SIZE_32];
         rng.fill_bytes(&mut bytes);
 
-        let fingerprint = blake3_fingerprint(unsafe { &bytes.get_unchecked(..len) });
+        let fingerprint = blake3_fingerprint(unsafe { &bytes.get_unchecked(..len) }).to_vec();
 
         let signature: Option<Vec<u8>> = None;
 
@@ -238,7 +238,7 @@ impl PrivateKey {
             }
         };
 
-        let fingerprint = blake3_fingerprint(&public_key);
+        let fingerprint = blake3_fingerprint(&public_key).to_vec();
 
         Self {
             primary: false,

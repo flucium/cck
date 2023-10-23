@@ -7,7 +7,9 @@ mod key;
 mod expiry;
 mod string;
 mod fingerprint;
+mod hybrid;
 
 pub use key::*;
 pub use key_type::*;
 pub use expiry::*;
+pub use hybrid::*;
