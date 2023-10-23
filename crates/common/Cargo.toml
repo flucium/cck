@@ -9,3 +9,6 @@ edition = "2021"
 # https://github.com/RustCrypto/formats/
 base64ct = "1.6.0"
 pem-rfc7468 = "0.7.0"
+
+[features]
+#heapless = []
